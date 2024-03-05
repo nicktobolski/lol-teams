@@ -26,7 +26,7 @@ export const LineChart = ({ data }: Props) => (
       data={data}
       theme={nivoTheme}
       animate={true}
-      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+      margin={{ top: 50, right: 110, bottom: 150, left: 60 }}
       xScale={{ type: "point" }}
       yScale={{
         type: "linear",
@@ -39,7 +39,7 @@ export const LineChart = ({ data }: Props) => (
       axisBottom={{
         tickSize: 5,
         tickPadding: 5,
-        tickRotation: 0,
+        tickRotation: 45,
         legend: "Games",
         legendOffset: 36,
         legendPosition: "middle",

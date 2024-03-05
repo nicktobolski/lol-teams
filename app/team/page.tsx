@@ -1,7 +1,7 @@
 "use client";
 import { LAYOUT_CLASSES, TEST_DATA } from "../consts";
 import { useSearchParams } from "next/navigation";
-import { format } from "date-fns";
+// import { format } from "date-fns"
 import {
   ParticipantRecord,
   fetchGameById,
@@ -102,7 +102,7 @@ const PageContent = () => {
               propertyFunctionMap[compareProperty](participantData)
             : // @ts-ignore
               participantData?.[compareProperty] ?? "",
-          x: format(game?.info.gameCreation ?? 0, "mm/dd/yy"),
+          x: game?.metadata.matchId ?? "",
         };
       }),
     };
@@ -119,7 +119,7 @@ const PageContent = () => {
     <div className="flex w-full flex-wrap md:flex-nowrap gap-4 md:flex-col">
       <Select
         label="Select a property to compare"
-        className="max-w-xs"
+        className="max-w-xs absolute metricSelector"
         onChange={(event) => setCompareProperty(event.target.value)}
         defaultSelectedKeys={[compareProperty]}
       >
@@ -130,7 +130,7 @@ const PageContent = () => {
         ))}
       </Select>
 
-      <div className="h-96 w-full">
+      <div className="h-128 w-full chartContainer">
         <LineChart data={chartData} />
       </div>
     </div>

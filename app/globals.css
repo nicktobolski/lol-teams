@@ -31,3 +31,12 @@ body {
     text-wrap: balance;
   }
 }
+
+.metricSelector {
+  right: 2em;
+  z-index: 9001;
+}
+
+.chartContainer {
+  height: 80vh;
+}

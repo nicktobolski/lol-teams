@@ -43,14 +43,14 @@ export const nivoTheme = {
   legends: {
     title: {
       text: {
-        fontSize: 11,
+        fontSize: 16,
         fill: "#ffffff",
         outlineWidth: 0,
         outlineColor: "transparent",
       },
     },
     text: {
-      fontSize: 11,
+      fontSize: 16,
       fill: "#ffffff",
       outlineWidth: 0,
       outlineColor: "transparent",
