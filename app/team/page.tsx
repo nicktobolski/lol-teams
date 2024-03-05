@@ -10,12 +10,12 @@ import {
   fetchUserByName,
 } from "../hooks/lolHooks";
 import { useQueries } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { getRandomColor, intersectionOfArrays } from "../utils/utils";
 import { LineChart } from "../components/LineChart";
 import { Select, SelectSection, SelectItem } from "@nextui-org/react";
 
-export default function Page() {
+const PageContent = () => {
   const searchParams = useSearchParams();
   const teamMemberNames = searchParams.get("members")?.split(",");
   const [compareProperty, setCompareProperty] = useState("kda");
@@ -64,7 +64,7 @@ export default function Page() {
   const gameResults = useQueries({
     queries: gameQueries,
   });
-  console.log({ gameResults });
+
   const coolColors = [
     "hsla(44, 100%, 52%, 1)",
     "hsla(19, 97%, 51%, 1)",
@@ -79,7 +79,6 @@ export default function Page() {
       //   console.log("wtf", { kills, assists, deaths });
       //   return 0;
       // }
-      console.log("wtf", { kills, assists, deaths });
 
       return (kills + assists) / (deaths === 0 ? 1 : deaths);
     },
@@ -117,26 +116,32 @@ export default function Page() {
     "goldEarned",
   ];
   return (
-    <main className={LAYOUT_CLASSES}>
-      <div className="flex w-full flex-wrap md:flex-nowrap gap-4 md:flex-col">
-        <Select
-          label="Select a property to compare"
-          className="max-w-xs"
-          onChange={(event) => setCompareProperty(event.target.value)}
-          defaultSelectedKeys={[compareProperty]}
-        >
-          {validDataComparisonPoints.map((key) => (
-            <SelectItem key={key} value={key}>
-              {key}
-            </SelectItem>
-          ))}
-        </Select>
+    <div className="flex w-full flex-wrap md:flex-nowrap gap-4 md:flex-col">
+      <Select
+        label="Select a property to compare"
+        className="max-w-xs"
+        onChange={(event) => setCompareProperty(event.target.value)}
+        defaultSelectedKeys={[compareProperty]}
+      >
+        {validDataComparisonPoints.map((key) => (
+          <SelectItem key={key} value={key}>
+            {key}
+          </SelectItem>
+        ))}
+      </Select>
 
-        <div className="h-96 w-full">
-          <LineChart data={chartData} />
-        </div>
+      <div className="h-96 w-full">
+        <LineChart data={chartData} />
       </div>
-      {/* <pre>{JSON.stringify(chartData, null, 2)}</pre> */}
+    </div>
+  );
+};
+export default function Page() {
+  return (
+    <main className={LAYOUT_CLASSES}>
+      <Suspense>
+        <PageContent />
+      </Suspense>
     </main>
   );
 }
