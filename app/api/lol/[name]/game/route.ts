@@ -5,9 +5,13 @@ export async function GET(
   { params }: { params: { name: string } }
 ) {
   try {
+    const url = new URL(request.url);
+    const mode = url.searchParams.get("mode");
     console.log({ params, key: process.env.RIOT_API_KEY });
     const reqUrl = new URL(
-      `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${params.name}/ids`
+      `https://americas.api.riotgames.com/lol/match/v5/matches/${params.name}${
+        mode === "timeline" ? "/timeline" : ""
+      }`
     );
     reqUrl.searchParams.set("api_key", process.env.RIOT_API_KEY ?? "");
     reqUrl.searchParams.set("count", String(50));
@@ -15,6 +19,5 @@ export async function GET(
     return Response.json(data);
   } catch (error) {
     console.log("There was an error", { error, request });
-    return Response.error();
   }
 }

@@ -1,13 +1,24 @@
 "use client";
-import { LAYOUT_CLASSES } from "../consts";
+import { LAYOUT_CLASSES, TEST_DATA } from "../consts";
 import { useSearchParams } from "next/navigation";
-import { fetchGamesByPuuid, fetchUserByName } from "../hooks/lolHooks";
+import { format } from "date-fns";
+import {
+  ParticipantRecord,
+  fetchGameById,
+  fetchGameTimelineById,
+  fetchGamesByPuuid,
+  fetchUserByName,
+} from "../hooks/lolHooks";
 import { useQueries } from "@tanstack/react-query";
-import { useMemo } from "react";
-import { intersectionOfArrays } from "../utils/utils";
+import { useMemo, useState } from "react";
+import { getRandomColor, intersectionOfArrays } from "../utils/utils";
+import { LineChart } from "../components/LineChart";
+import { Select, SelectSection, SelectItem } from "@nextui-org/react";
+
 export default function Page() {
   const searchParams = useSearchParams();
   const teamMemberNames = searchParams.get("members")?.split(",");
+  const [compareProperty, setCompareProperty] = useState("kda");
   const userQueries = (teamMemberNames || []).map((name) => {
     return {
       queryKey: ["user", name],
@@ -23,7 +34,7 @@ export default function Page() {
     .map(({ data }) => data?.puuid ?? "")
     .filter(Boolean);
 
-  const gameQueries = (puuids || []).map((id) => {
+  const gameIdsQueries = (puuids || []).map((id) => {
     return {
       queryKey: ["matches", id],
       queryFn: () => fetchGamesByPuuid(id),
@@ -32,19 +43,100 @@ export default function Page() {
     };
   });
 
-  const gameResults = useQueries({
-    queries: gameQueries,
+  const gameIdsResults = useQueries({
+    queries: gameIdsQueries,
   });
 
   const relevantGameIds: string[] = useMemo(() => {
-    const allGames = (gameResults ?? []).map((result) => result?.data ?? []);
-    console.log({ allGames });
+    const allGames = (gameIdsResults ?? []).map((result) => result?.data ?? []);
     return intersectionOfArrays(...allGames);
-  }, [gameResults]);
+  }, [gameIdsResults]);
 
+  const gameQueries = (relevantGameIds.slice(0, 30) || []).map((id) => {
+    return {
+      queryKey: ["game", id],
+      queryFn: () => fetchGameById(id),
+      staleTime: Infinity,
+      enabled: relevantGameIds.length > 0,
+    };
+  });
+
+  const gameResults = useQueries({
+    queries: gameQueries,
+  });
+  console.log({ gameResults });
+  const coolColors = [
+    "hsla(44, 100%, 52%, 1)",
+    "hsla(19, 97%, 51%, 1)",
+    "hsla(334, 100%, 50%, 1)",
+    "hsla(265, 83%, 57%, 1)",
+    "hsla(217, 100%, 61%, 1)",
+  ];
+
+  const propertyFunctionMap = {
+    kda: ({ kills, assists, deaths }: ParticipantRecord) => {
+      // if (!kills || !assists || !deaths) {
+      //   console.log("wtf", { kills, assists, deaths });
+      //   return 0;
+      // }
+      console.log("wtf", { kills, assists, deaths });
+
+      return (kills + assists) / (deaths === 0 ? 1 : deaths);
+    },
+  };
+  const justGames = gameResults.map((result) => result.data);
+  const chartData = puuids.map((id, index) => {
+    return {
+      id: teamMemberNames?.[index] ?? "asdf",
+      color: coolColors[index],
+      data: justGames.map((game) => {
+        const participantData = game?.info.participants.find(
+          (part) => part.puuid === id
+        );
+        if (!participantData) {
+          return { x: 0, y: 0 };
+        }
+        return {
+          // @ts-ignore
+          y: propertyFunctionMap[compareProperty]
+            ? // @ts-ignore
+              propertyFunctionMap[compareProperty](participantData)
+            : // @ts-ignore
+              participantData?.[compareProperty] ?? "",
+          x: format(game?.info.gameCreation ?? 0, "mm/dd/yy"),
+        };
+      }),
+    };
+  });
+
+  const validDataComparisonPoints = [
+    "kills",
+    "assists",
+    "deaths",
+    "kda",
+    "goldEarned",
+  ];
   return (
     <main className={LAYOUT_CLASSES}>
-      <pre>{JSON.stringify(relevantGameIds, null, 2)}</pre>
+      <div className="flex w-full flex-wrap md:flex-nowrap gap-4 md:flex-col">
+        <Select
+          label="Select a property to compare"
+          className="max-w-xs"
+          onChange={(event) => setCompareProperty(event.target.value)}
+          defaultSelectedKeys={[compareProperty]}
+        >
+          {validDataComparisonPoints.map((key) => (
+            <SelectItem key={key} value={key}>
+              {key}
+            </SelectItem>
+          ))}
+        </Select>
+
+        <div className="h-96 w-full">
+          <LineChart data={chartData} />
+        </div>
+      </div>
+      {/* <pre>{JSON.stringify(chartData, null, 2)}</pre> */}
     </main>
   );
 }
