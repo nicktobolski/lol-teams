@@ -123,8 +123,9 @@ const PageContent = () => {
       )}
       {!isGameDataLoading && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <div className="grid grid-cols-12 items-center">
-            <div className="col-start-1 col-end-4 pl-14">
+          <div className=""> </div>
+          <div className="grid grid-cols-12 items-center pt-24 ">
+            <div className="col-start-1 col-end-4 pl-24">
               <Select
                 label="Compare"
                 className="max-w-xs"
@@ -151,7 +152,7 @@ const PageContent = () => {
             </div>
           </div>
 
-          <div className={`h-128 w-full chartContainer`}>
+          <div className={`h-128 w-full chartContainer px-12`}>
             <LineChart data={chartData} />
           </div>
         </motion.div>

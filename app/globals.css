@@ -6,22 +6,21 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-  /* CSS HSL */
---rose: hsla(333, 93%, 56%, 1);
---fandango: hsla(309, 77%, 40%, 1);
---grape: hsla(276, 91%, 38%, 1);
---chrysler-blue: hsla(268, 88%, 36%, 1);
---dark-blue: hsla(263, 87%, 35%, 1);
---zaffre: hsla(258, 86%, 34%, 1);
---palatinate-blue: hsla(243, 57%, 50%, 1);
---neon-blue: hsla(229, 83%, 60%, 1);
---chefchaouen-blue: hsla(212, 84%, 61%, 1);
---vivid-sky-blue: hsla(194, 85%, 62%, 1);
---lapis-lazuli: hsla(204, 56%, 31%, 1);
---verdigris: hsla(181, 49%, 43%, 1);
---emerald: hsla(154, 53%, 57%, 1);
---light-green: hsla(134, 75%, 72%, 1);
---tea-green: hsla(126, 81%, 88%, 1);
+  --rose: hsl(333, 93%, 56%);
+  --fandango: hsl(309, 77%, 40%);
+  --grape: hsl(276, 91%, 38%);
+  --chrysler-blue: hsl(268, 88%, 36%);
+  --dark-blue: hsl(263, 87%, 35%);
+  --zaffre: hsl(258, 86%, 34%);
+  --palatinate-blue: hsl(243, 57%, 50%);
+  --neon-blue: hsl(229, 83%, 60%);
+  --chefchaouen-blue: hsl(212, 84%, 61%);
+  --vivid-sky-blue: hsl(194, 85%, 62%);
+  --lapis-lazuli: hsl(204, 56%, 31%);
+  --verdigris: hsl(181, 49%, 43%);
+  --emerald: hsl(154, 53%, 57%);
+  --light-green: hsl(134, 75%, 72%);
+  --tea-green: hsl(126, 81%, 88%);
 }
 
 @media (prefers-color-scheme: dark) {
