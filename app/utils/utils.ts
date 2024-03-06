@@ -58,3 +58,7 @@ export function getParticipantDataFromGame(
 
 export const roundTo2DecimalPlaces = (num: number) =>
   (Math.round(num + Number.EPSILON) * 100) / 100;
+
+export const formatNumber = new Intl.NumberFormat("en-US", {
+  maximumSignificantDigits: 5,
+}).format;

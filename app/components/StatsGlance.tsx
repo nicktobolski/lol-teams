@@ -2,6 +2,7 @@
 import React from "react";
 import { GameStub, ParticipantRecord } from "../hooks/lolHooks";
 import {
+  formatNumber,
   getParticipantDataFromGame,
   getParticipantsDataForCompareKey,
   propertyFunctionMap,
@@ -45,7 +46,7 @@ export function StatsGlance({
           return acc;
         }, 0) / games.length;
 
-      acc.average.push({ playerName, score: roundTo2DecimalPlaces(avgScore) });
+      acc.average.push({ playerName, score: avgScore });
       acc.best.push({
         playerName,
         score: Math.max(...scores),
@@ -70,7 +71,7 @@ export function StatsGlance({
         <ol className="list-decimal">
           {average.sort(sortStatScoresAsc).map(({ playerName, score }) => (
             <li key={playerName}>
-              {playerName}: {score}
+              {playerName}: {formatNumber(score)}
             </li>
           ))}
         </ol>
@@ -80,7 +81,7 @@ export function StatsGlance({
         <ol className="list-decimal">
           {best.sort(sortStatScoresAsc).map(({ playerName, score }) => (
             <li key={playerName}>
-              {playerName}: {score}
+              {playerName}: {formatNumber(score)}
             </li>
           ))}
         </ol>
@@ -90,7 +91,7 @@ export function StatsGlance({
         <ol className="list-decimal">
           {worst.sort(sortStatScoresDsc).map(({ playerName, score }) => (
             <li key={playerName}>
-              {playerName}: {score}
+              {playerName}: {formatNumber(score)}
             </li>
           ))}
         </ol>
