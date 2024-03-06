@@ -1,12 +1,10 @@
 "use client";
 import React from "react";
-import { GameStub, ParticipantRecord } from "../hooks/lolHooks";
+import { GameStub } from "../hooks/lolHooks";
 import {
   formatNumber,
   getParticipantDataFromGame,
   getParticipantsDataForCompareKey,
-  propertyFunctionMap,
-  roundTo2DecimalPlaces,
 } from "../utils/utils";
 
 export type StatsRecord = {
@@ -63,12 +61,12 @@ export function StatsGlance({
       worst: [] as any,
     }
   );
-
+  const listClasses = "list-decimal pl-5 text-sm";
   return (
     <div className="flex justify-between">
       <div>
         Mean
-        <ol className="list-decimal">
+        <ol className={listClasses}>
           {average.sort(sortStatScoresAsc).map(({ playerName, score }) => (
             <li key={playerName}>
               {playerName}: {formatNumber(score)}
@@ -77,8 +75,8 @@ export function StatsGlance({
         </ol>
       </div>
       <div>
-        Best
-        <ol className="list-decimal">
+        Highest
+        <ol className={listClasses}>
           {best.sort(sortStatScoresAsc).map(({ playerName, score }) => (
             <li key={playerName}>
               {playerName}: {formatNumber(score)}
@@ -87,8 +85,8 @@ export function StatsGlance({
         </ol>
       </div>
       <div>
-        Worst
-        <ol className="list-decimal">
+        Lowest
+        <ol className={listClasses}>
           {worst.sort(sortStatScoresDsc).map(({ playerName, score }) => (
             <li key={playerName}>
               {playerName}: {formatNumber(score)}

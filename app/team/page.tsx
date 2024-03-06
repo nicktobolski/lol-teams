@@ -1,12 +1,9 @@
 "use client";
-import { LAYOUT_CLASSES, TEST_DATA } from "../consts";
+import { DATA_COMPARE_KEYS, LAYOUT_CLASSES } from "../consts";
 import { useSearchParams } from "next/navigation";
-// import { format } from "date-fns"
+
 import {
-  GameStub,
-  ParticipantRecord,
   fetchGameById,
-  fetchGameTimelineById,
   fetchGamesByPuuid,
   fetchUserByName,
 } from "../hooks/lolHooks";
@@ -14,13 +11,10 @@ import { useQueries } from "@tanstack/react-query";
 import { Suspense, useMemo, useState } from "react";
 import {
   getParticipantsDataForCompareKey,
-  getRandomColor,
   intersectionOfArrays,
-  propertyFunctionMap,
 } from "../utils/utils";
 import { LineChart } from "../components/LineChart";
-import { Select, SelectSection, SelectItem } from "@nextui-org/react";
-import { format } from "date-fns";
+import { Select, SelectItem } from "@nextui-org/react";
 import { StatsGlance } from "../components/StatsGlance";
 
 const PageContent = () => {
@@ -93,62 +87,36 @@ const PageContent = () => {
     };
   });
 
-  const validDataComparisonPoints = [
-    "kills",
-    "assists",
-    "deaths",
-    "kda",
-    "goldEarned",
-    "basicPings",
-    "assistMePings",
-    "allInPings",
-    "getBackPings",
-    "dangerPings",
-    "enemyVisionPings",
-    "enemyMissingPings",
-    "champExperience",
-    "damageDealtToObjectives",
-    "turretTakedowns",
-    "turretKills",
-    "totalHealsOnTeammates",
-    "visionScore",
-    "visionClearedPings",
-    "visionScore",
-    "visionWardsBoughtInGame",
-    "wardsKilled",
-    "wardsPlaced",
-    "largestMultiKill",
-    "doubleKills",
-    "tripleKills",
-    "quadraKills",
-    "pentaKills",
-    "inhibitorTakedowns",
-  ];
   return (
     <div className="flex w-full flex-wrap md:flex-nowrap gap-4 md:flex-col">
-      <Select
-        label="Select a property to compare"
-        className="max-w-xs absolute metricSelector"
-        onChange={(event) => setCompareProperty(event.target.value)}
-        defaultSelectedKeys={[compareProperty]}
-      >
-        {validDataComparisonPoints.map((key) => (
-          <SelectItem key={key} value={key}>
-            {key}
-          </SelectItem>
-        ))}
-      </Select>
+      <div className="grid grid-cols-12 items-center">
+        <div className="col-start-1 col-end-4 pl-14">
+          <Select
+            label="Compare"
+            className="max-w-xs"
+            onChange={(event) => setCompareProperty(event.target.value)}
+            defaultSelectedKeys={[compareProperty]}
+            size="lg"
+          >
+            {DATA_COMPARE_KEYS.map((key) => (
+              <SelectItem key={key} value={key}>
+                {key}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
+        <div className="col-start-5 col-end-10">
+          <StatsGlance
+            games={justGames}
+            puuids={puuids}
+            teamMemberNames={teamMemberNames ?? []}
+            compareProperty={compareProperty}
+          />
+        </div>
+      </div>
 
       <div className="h-128 w-full chartContainer">
         <LineChart data={chartData} />
-      </div>
-      <div>
-        <StatsGlance
-          games={justGames}
-          puuids={puuids}
-          teamMemberNames={teamMemberNames ?? []}
-          compareProperty={compareProperty}
-        />
       </div>
     </div>
   );

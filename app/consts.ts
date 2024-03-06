@@ -1,6 +1,36 @@
 export const LAYOUT_CLASSES =
   "flex min-h-screen flex-col items-center justify-between p-24 dark text-foreground bg-background";
-
+export const DATA_COMPARE_KEYS = [
+  "kills",
+  "assists",
+  "deaths",
+  "kda",
+  "goldEarned",
+  "basicPings",
+  "assistMePings",
+  "allInPings",
+  "getBackPings",
+  "dangerPings",
+  "enemyVisionPings",
+  "enemyMissingPings",
+  "champExperience",
+  "damageDealtToObjectives",
+  "turretTakedowns",
+  "turretKills",
+  "totalHealsOnTeammates",
+  "visionScore",
+  "visionClearedPings",
+  "visionScore",
+  "visionWardsBoughtInGame",
+  "wardsKilled",
+  "wardsPlaced",
+  "largestMultiKill",
+  "doubleKills",
+  "tripleKills",
+  "quadraKills",
+  "pentaKills",
+  "inhibitorTakedowns",
+];
 export const TEST_DATA = [
   {
     metadata: {
