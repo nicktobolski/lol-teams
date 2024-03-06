@@ -38,5 +38,7 @@ body {
 }
 
 .chartContainer {
-  height: 80vh;
+  height: calc(100vh - 300px);
+  min-height: 400px;
+  min-width: 400px;
 }
