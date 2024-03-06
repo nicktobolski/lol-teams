@@ -14,6 +14,7 @@ import { Suspense, useMemo, useState } from "react";
 import { getRandomColor, intersectionOfArrays } from "../utils/utils";
 import { LineChart } from "../components/LineChart";
 import { Select, SelectSection, SelectItem } from "@nextui-org/react";
+import { format } from "date-fns";
 
 const PageContent = () => {
   const searchParams = useSearchParams();
@@ -94,6 +95,7 @@ const PageContent = () => {
             : // @ts-ignore
               participantData?.[compareProperty] ?? "",
           x: game?.metadata.matchId ?? "",
+          // date: format(game?.info.gameCreation ?? "", "MM/dd/yy HH:MM"),
         };
       }),
     };

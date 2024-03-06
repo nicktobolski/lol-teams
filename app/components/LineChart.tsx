@@ -14,7 +14,6 @@ export interface LineGroupData {
 export interface LineData {
   x: string | number;
   y: number | string;
-  date: string;
 }
 
 type Props = {
