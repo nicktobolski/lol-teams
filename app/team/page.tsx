@@ -3,6 +3,7 @@ import { LAYOUT_CLASSES, TEST_DATA } from "../consts";
 import { useSearchParams } from "next/navigation";
 // import { format } from "date-fns"
 import {
+  GameStub,
   ParticipantRecord,
   fetchGameById,
   fetchGameTimelineById,
@@ -11,10 +12,16 @@ import {
 } from "../hooks/lolHooks";
 import { useQueries } from "@tanstack/react-query";
 import { Suspense, useMemo, useState } from "react";
-import { getRandomColor, intersectionOfArrays } from "../utils/utils";
+import {
+  getParticipantsDataForCompareKey,
+  getRandomColor,
+  intersectionOfArrays,
+  propertyFunctionMap,
+} from "../utils/utils";
 import { LineChart } from "../components/LineChart";
 import { Select, SelectSection, SelectItem } from "@nextui-org/react";
 import { format } from "date-fns";
+import { StatsGlance } from "../components/StatsGlance";
 
 const PageContent = () => {
   const searchParams = useSearchParams();
@@ -66,20 +73,11 @@ const PageContent = () => {
     queries: gameQueries,
   });
 
-  const propertyFunctionMap = {
-    kda: ({ kills, assists, deaths }: ParticipantRecord) => {
-      return (
-        Math.round(
-          ((kills + assists) / (deaths === 0 ? 1 : deaths) + Number.EPSILON) *
-            100
-        ) / 100
-      );
-    },
-  };
   const justGames = gameResults.map((result) => result.data);
+
   const chartData = puuids.map((id, index) => {
     return {
-      id: teamMemberNames?.[index] ?? "asdf",
+      id: teamMemberNames?.[index] ?? "chud",
       data: justGames.map((game) => {
         const participantData = game?.info.participants.find(
           (part) => part.puuid === id
@@ -88,14 +86,8 @@ const PageContent = () => {
           return { x: 0, y: 0 };
         }
         return {
-          // @ts-ignore
-          y: propertyFunctionMap[compareProperty]
-            ? // @ts-ignore
-              propertyFunctionMap[compareProperty](participantData)
-            : // @ts-ignore
-              participantData?.[compareProperty] ?? "",
+          y: getParticipantsDataForCompareKey(participantData, compareProperty),
           x: game?.metadata.matchId ?? "",
-          // date: format(game?.info.gameCreation ?? "", "MM/dd/yy HH:MM"),
         };
       }),
     };
@@ -107,6 +99,30 @@ const PageContent = () => {
     "deaths",
     "kda",
     "goldEarned",
+    "basicPings",
+    "assistMePings",
+    "allInPings",
+    "getBackPings",
+    "dangerPings",
+    "enemyVisionPings",
+    "enemyMissingPings",
+    "champExperience",
+    "damageDealtToObjectives",
+    "turretTakedowns",
+    "turretKills",
+    "totalHealsOnTeammates",
+    "visionScore",
+    "visionClearedPings",
+    "visionScore",
+    "visionWardsBoughtInGame",
+    "wardsKilled",
+    "wardsPlaced",
+    "largestMultiKill",
+    "doubleKills",
+    "tripleKills",
+    "quadraKills",
+    "pentaKills",
+    "inhibitorTakedowns",
   ];
   return (
     <div className="flex w-full flex-wrap md:flex-nowrap gap-4 md:flex-col">
@@ -125,6 +141,14 @@ const PageContent = () => {
 
       <div className="h-128 w-full chartContainer">
         <LineChart data={chartData} />
+      </div>
+      <div>
+        <StatsGlance
+          games={justGames}
+          puuids={puuids}
+          teamMemberNames={teamMemberNames ?? []}
+          compareProperty={compareProperty}
+        />
       </div>
     </div>
   );

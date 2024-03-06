@@ -40,6 +40,7 @@ export interface GameStub {
     gameCreation: number;
   };
 }
+
 export interface ParticipantRecord {
   allInPings: number;
   assistMePings: number;

@@ -1,3 +1,5 @@
+import { GameStub, ParticipantRecord } from "../hooks/lolHooks";
+
 export function intersectionOfArrays(...arrays: string[][]): string[] {
   // Check if there are no arrays or any one of the arrays is empty
   if (arrays.length === 0 || arrays.some((arr) => arr.length === 0)) {
@@ -21,3 +23,38 @@ export function getRandomColor() {
   var l = rand(0, 100);
   return "hsl(" + h + "," + s + "%," + l + "%)";
 }
+
+export const propertyFunctionMap = {
+  kda: ({ kills, assists, deaths }: ParticipantRecord) =>
+    roundTo2DecimalPlaces(kills + assists) / (deaths === 0 ? 1 : deaths),
+};
+
+export const getParticipantsDataForCompareKey = (
+  record: ParticipantRecord,
+  compareKey: string
+) => {
+  // @ts-ignore
+  return propertyFunctionMap[compareKey]
+    ? // @ts-ignore
+      propertyFunctionMap[compareKey](record)
+    : // @ts-ignore
+      record?.[compareKey] ?? "";
+};
+
+export function getParticipantDataFromGame(
+  puuid: string
+): (
+  value: GameStub | undefined,
+  index: number,
+  array: (GameStub | undefined)[]
+) => ParticipantRecord {
+  return (game) => {
+    const participantData = game?.info.participants.find(
+      (part) => part.puuid === puuid
+    );
+    return participantData ?? ({} as ParticipantRecord);
+  };
+}
+
+export const roundTo2DecimalPlaces = (num: number) =>
+  (Math.round(num + Number.EPSILON) * 100) / 100;
