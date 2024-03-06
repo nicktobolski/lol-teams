@@ -1,6 +1,6 @@
-import { ResponsiveLine } from "@nivo/line";
+import { PointTooltipProps, ResponsiveLine } from "@nivo/line";
 import { nivoTheme } from "../utils/nivoTheme";
-
+import { BasicTooltip } from "@nivo/tooltip";
 // make sure parent container have a defined height when using
 // responsive component, otherwise height will be 0 and
 // no chart will be rendered.
@@ -8,17 +8,30 @@ import { nivoTheme } from "../utils/nivoTheme";
 // you'll often use just a few of them.
 export interface LineGroupData {
   id: string;
-  color: string;
   data: LineData[];
 }
 
 export interface LineData {
   x: string | number;
   y: number | string;
+  date: string;
 }
 
 type Props = {
   data: LineGroupData[];
+};
+
+const Tooltip: React.FunctionComponent<PointTooltipProps> = (props) => {
+  console.log({ props });
+  return (
+    <BasicTooltip
+      id={props.point.serieId}
+      value={`${new Intl.NumberFormat("en-US").format(
+        props.point.data.y as number
+      )}`}
+      enableChip
+    />
+  );
 };
 export const LineChart = ({ data }: Props) => (
   <>
@@ -26,7 +39,7 @@ export const LineChart = ({ data }: Props) => (
       data={data}
       theme={nivoTheme}
       animate={true}
-      margin={{ top: 50, right: 110, bottom: 150, left: 60 }}
+      margin={{ top: 50, right: 150, bottom: 150, left: 60 }}
       xScale={{ type: "point" }}
       yScale={{
         type: "linear",
@@ -55,11 +68,13 @@ export const LineChart = ({ data }: Props) => (
         truncateTickAt: 0,
       }}
       pointSize={7}
+      colors={{ scheme: "dark2" }}
       pointColor={{ from: nivoTheme }}
       pointBorderWidth={2}
       pointBorderColor={{ from: "serieColor" }}
       pointLabelYOffset={-12}
       useMesh={true}
+      tooltip={Tooltip}
       legends={[
         {
           anchor: "bottom-right",

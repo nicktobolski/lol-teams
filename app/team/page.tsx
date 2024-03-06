@@ -65,29 +65,20 @@ const PageContent = () => {
     queries: gameQueries,
   });
 
-  const coolColors = [
-    "hsla(44, 100%, 52%, 1)",
-    "hsla(19, 97%, 51%, 1)",
-    "hsla(334, 100%, 50%, 1)",
-    "hsla(265, 83%, 57%, 1)",
-    "hsla(217, 100%, 61%, 1)",
-  ];
-
   const propertyFunctionMap = {
     kda: ({ kills, assists, deaths }: ParticipantRecord) => {
-      // if (!kills || !assists || !deaths) {
-      //   console.log("wtf", { kills, assists, deaths });
-      //   return 0;
-      // }
-
-      return (kills + assists) / (deaths === 0 ? 1 : deaths);
+      return (
+        Math.round(
+          ((kills + assists) / (deaths === 0 ? 1 : deaths) + Number.EPSILON) *
+            100
+        ) / 100
+      );
     },
   };
   const justGames = gameResults.map((result) => result.data);
   const chartData = puuids.map((id, index) => {
     return {
       id: teamMemberNames?.[index] ?? "asdf",
-      color: coolColors[index],
       data: justGames.map((game) => {
         const participantData = game?.info.participants.find(
           (part) => part.puuid === id
