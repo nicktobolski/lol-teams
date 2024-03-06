@@ -41,4 +41,24 @@ body {
   height: calc(100vh - 300px);
   min-height: 400px;
   min-width: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart {
+  opacity: 0;
+}
+
+.fade-in {
+  animation: fade-in 3s;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 100;
+  }
 }

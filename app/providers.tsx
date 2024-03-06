@@ -6,6 +6,7 @@ import { useState } from "react";
 // 1. import `NextUIProvider` component
 import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { MotionConfig } from "framer-motion";
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [client] = useState(new QueryClient());
 
@@ -13,7 +14,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={client}>
       <NextUIProvider>
         <NextThemesProvider attribute="class" defaultTheme="dark">
-          {children}
+          <MotionConfig transition={{ duration: 0.5 }}>{children}</MotionConfig>
           <ReactQueryDevtools initialIsOpen={false} />
         </NextThemesProvider>
       </NextUIProvider>

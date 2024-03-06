@@ -16,6 +16,8 @@ import {
 import { LineChart } from "../components/LineChart";
 import { Select, SelectItem } from "@nextui-org/react";
 import { StatsGlance } from "../components/StatsGlance";
+import { ChartLoading } from "../components/ChartLoading";
+import { motion } from "framer-motion";
 
 const PageContent = () => {
   const searchParams = useSearchParams();
@@ -68,6 +70,11 @@ const PageContent = () => {
   });
 
   const justGames = gameResults.map((result) => result.data);
+  const isGameDataLoading =
+    relevantGameIds.length === 0 ||
+    gameResults
+      .map(({ isLoading }) => isLoading)
+      .some((isLoading) => isLoading);
 
   const chartData = puuids.map((id, index) => {
     return {
@@ -89,35 +96,45 @@ const PageContent = () => {
 
   return (
     <div className="flex w-full flex-wrap md:flex-nowrap gap-4 md:flex-col">
-      <div className="grid grid-cols-12 items-center">
-        <div className="col-start-1 col-end-4 pl-14">
-          <Select
-            label="Compare"
-            className="max-w-xs"
-            onChange={(event) => setCompareProperty(event.target.value)}
-            defaultSelectedKeys={[compareProperty]}
-            size="lg"
-          >
-            {DATA_COMPARE_KEYS.map((key) => (
-              <SelectItem key={key} value={key}>
-                {key}
-              </SelectItem>
-            ))}
-          </Select>
+      {isGameDataLoading && (
+        <div className="fade-in">
+          <ChartLoading loadingText={"Loading team game data..."} />
         </div>
-        <div className="col-start-5 col-end-10">
-          <StatsGlance
-            games={justGames}
-            puuids={puuids}
-            teamMemberNames={teamMemberNames ?? []}
-            compareProperty={compareProperty}
-          />
-        </div>
-      </div>
+      )}
+      {!isGameDataLoading && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <div className="grid grid-cols-12 items-center">
+            <div className="col-start-1 col-end-4 pl-14">
+              <Select
+                label="Compare"
+                className="max-w-xs"
+                onChange={(event) => setCompareProperty(event.target.value)}
+                defaultSelectedKeys={[compareProperty]}
+                size="lg"
+              >
+                {DATA_COMPARE_KEYS.map((key) => (
+                  <SelectItem key={key} value={key}>
+                    {key}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
 
-      <div className="h-128 w-full chartContainer">
-        <LineChart data={chartData} />
-      </div>
+            <div className="col-start-5 col-end-10">
+              <StatsGlance
+                games={justGames}
+                puuids={puuids}
+                teamMemberNames={teamMemberNames ?? []}
+                compareProperty={compareProperty}
+              />
+            </div>
+          </div>
+
+          <div className={`h-128 w-full chartContainer`}>
+            <LineChart data={chartData} />
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 };
