@@ -2,9 +2,7 @@ import ky from "ky";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
 const fetchUserByName = async (summonerName: string) => {
-  return await ky
-    .get(`api/lol/${summonerName}/profile`)
-    .json<{ puuid: string }>();
+  return await ky.get(`api/lol/${summonerName}/profile`).json<PlayerMetaData>();
 };
 const fetchGamesByPuuid = async (id: string): Promise<string[]> => {
   return await ky.get(`api/lol/${id}/games`).json();
@@ -40,6 +38,23 @@ export interface GameStub {
     gameCreation: number;
   };
 }
+
+export type PlayerDatum = {
+  color: string;
+  name: string;
+  puuid: string;
+  metaData?: PlayerMetaData;
+};
+
+export type PlayerMetaData = {
+  id: string;
+  accountId: string;
+  puuid: string;
+  name: string;
+  profileIconId: number;
+  revisionDate: number;
+  summonerLevel: number;
+};
 
 export interface ParticipantRecord {
   allInPings: number;

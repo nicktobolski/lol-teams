@@ -1,5 +1,5 @@
 "use client";
-import { DATA_COMPARE_KEYS, LAYOUT_CLASSES } from "../consts";
+import { COOL_COLORS, DATA_COMPARE_KEYS, LAYOUT_CLASSES } from "../consts";
 import { useSearchParams } from "next/navigation";
 
 import {
@@ -38,10 +38,23 @@ const PageContent = () => {
     .map(({ data }) => data?.puuid ?? "")
     .filter(Boolean);
 
-  const gameIdsQueries = (puuids || []).map((id) => {
+  const players = useMemo(
+    () =>
+      teamMemberNames?.map((name, i) => {
+        return {
+          color: COOL_COLORS[i],
+          puuid: userResults?.[i]?.data?.puuid ?? "asdf",
+          name,
+          metaData: userResults?.[i]?.data,
+        };
+      }) ?? [],
+    [teamMemberNames, userResults]
+  );
+
+  const gameIdsQueries = players.map(({ puuid }) => {
     return {
-      queryKey: ["matches", id],
-      queryFn: () => fetchGamesByPuuid(id),
+      queryKey: ["matches", puuid],
+      queryFn: () => fetchGamesByPuuid(puuid),
       staleTime: Infinity,
       enabled: puuids.length === userResults.length,
     };
@@ -76,23 +89,30 @@ const PageContent = () => {
       .map(({ isLoading }) => isLoading)
       .some((isLoading) => isLoading);
 
-  const chartData = puuids.map((id, index) => {
-    return {
-      id: teamMemberNames?.[index] ?? "chud",
-      data: justGames.map((game) => {
-        const participantData = game?.info.participants.find(
-          (part) => part.puuid === id
-        );
-        if (!participantData) {
-          return { x: 0, y: 0 };
-        }
-        return {
-          y: getParticipantsDataForCompareKey(participantData, compareProperty),
-          x: game?.metadata.matchId ?? "",
-        };
-      }),
-    };
-  });
+  const chartData =
+    players?.map(({ name, color, puuid }, index) => {
+      return {
+        id: name,
+        color,
+        data: justGames
+          .map((game) => {
+            const participantData = game?.info.participants.find(
+              (part) => part.puuid === puuid
+            );
+            if (!participantData) {
+              return { x: 0, y: 0 };
+            }
+            return {
+              y: getParticipantsDataForCompareKey(
+                participantData,
+                compareProperty
+              ),
+              x: game?.info.gameCreation ?? "",
+            };
+          })
+          .reverse(),
+      };
+    }) ?? [];
 
   return (
     <div className="flex w-full flex-wrap md:flex-nowrap gap-4 md:flex-col">
@@ -126,6 +146,7 @@ const PageContent = () => {
                 puuids={puuids}
                 teamMemberNames={teamMemberNames ?? []}
                 compareProperty={compareProperty}
+                players={players ?? []}
               />
             </div>
           </div>

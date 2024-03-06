@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
-import { GameStub } from "../hooks/lolHooks";
+import Image from "next/image";
+import { GameStub, PlayerDatum } from "../hooks/lolHooks";
 import {
   formatNumber,
   getParticipantDataFromGame,
@@ -8,8 +9,27 @@ import {
 } from "../utils/utils";
 
 export type StatsRecord = {
-  playerName: string;
+  player: PlayerDatum;
   score: number;
+};
+export const FancyPlayerName = ({ player }: { player: PlayerDatum }) => {
+  return (
+    <div className="fancyPlayer" style={{ color: player.color }}>
+      {/*<div style={{ borderColor: player.color }} className="playerAvatar">
+         <Image
+          src={`http://ddragon.leagueoflegends.com/cdn/10.18.1/img/profileicon/${player.metaData?.profileIconId}.png`}
+          width={36}
+          height={36}
+          alt={`${player.name}'s League Avatar`}
+        />
+      </div>*/}
+      {/* <div
+        style={{ backgroundColor: player.color }}
+        className="playerDot"
+      ></div> */}
+      {player.name}
+    </div>
+  );
 };
 const sortStatScoresAsc = (a: StatsRecord, b: StatsRecord): number =>
   b.score - a.score;
@@ -20,21 +40,22 @@ export function StatsGlance({
   puuids,
   teamMemberNames,
   compareProperty,
+  players,
 }: {
   games: (GameStub | undefined)[];
   puuids: string[];
   teamMemberNames: string[];
   compareProperty: string;
+  players: PlayerDatum[];
 }) {
-  const { average, best, worst } = puuids.reduce<{
+  const { average, best, worst } = players.reduce<{
     average: StatsRecord[];
     best: StatsRecord[];
     worst: StatsRecord[];
   }>(
-    (acc, puuid, index) => {
-      const playerName = teamMemberNames?.[index];
+    (acc, player) => {
       const scores = games
-        .map(getParticipantDataFromGame(puuid))
+        .map(getParticipantDataFromGame(player.puuid))
         .map((participantData) =>
           getParticipantsDataForCompareKey(participantData, compareProperty)
         );
@@ -44,21 +65,21 @@ export function StatsGlance({
           return acc;
         }, 0) / games.length;
 
-      acc.average.push({ playerName, score: avgScore });
+      acc.average.push({ player, score: avgScore });
       acc.best.push({
-        playerName,
+        player,
         score: Math.max(...scores),
       });
       acc.worst.push({
-        playerName,
+        player,
         score: Math.min(...scores),
       });
       return acc;
     },
     {
-      average: [] as any,
-      best: [] as any,
-      worst: [] as any,
+      average: [],
+      best: [],
+      worst: [],
     }
   );
   const listClasses = "list-decimal pl-5 text-sm";
@@ -67,9 +88,9 @@ export function StatsGlance({
       <div>
         Mean
         <ol className={listClasses}>
-          {average.sort(sortStatScoresAsc).map(({ playerName, score }) => (
-            <li key={playerName}>
-              {playerName}: {formatNumber(score)}
+          {average.sort(sortStatScoresAsc).map(({ player, score }) => (
+            <li key={player.name}>
+              <FancyPlayerName player={player} />: {formatNumber(score)}
             </li>
           ))}
         </ol>
@@ -77,9 +98,9 @@ export function StatsGlance({
       <div>
         Highest
         <ol className={listClasses}>
-          {best.sort(sortStatScoresAsc).map(({ playerName, score }) => (
-            <li key={playerName}>
-              {playerName}: {formatNumber(score)}
+          {best.sort(sortStatScoresAsc).map(({ player, score }) => (
+            <li key={player.name}>
+              <FancyPlayerName player={player} />: {formatNumber(score)}
             </li>
           ))}
         </ol>
@@ -87,9 +108,9 @@ export function StatsGlance({
       <div>
         Lowest
         <ol className={listClasses}>
-          {worst.sort(sortStatScoresDsc).map(({ playerName, score }) => (
-            <li key={playerName}>
-              {playerName}: {formatNumber(score)}
+          {worst.sort(sortStatScoresDsc).map(({ player, score }) => (
+            <li key={player.name}>
+              <FancyPlayerName player={player} />: {formatNumber(score)}
             </li>
           ))}
         </ol>

@@ -6,6 +6,22 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  /* CSS HSL */
+--rose: hsla(333, 93%, 56%, 1);
+--fandango: hsla(309, 77%, 40%, 1);
+--grape: hsla(276, 91%, 38%, 1);
+--chrysler-blue: hsla(268, 88%, 36%, 1);
+--dark-blue: hsla(263, 87%, 35%, 1);
+--zaffre: hsla(258, 86%, 34%, 1);
+--palatinate-blue: hsla(243, 57%, 50%, 1);
+--neon-blue: hsla(229, 83%, 60%, 1);
+--chefchaouen-blue: hsla(212, 84%, 61%, 1);
+--vivid-sky-blue: hsla(194, 85%, 62%, 1);
+--lapis-lazuli: hsla(204, 56%, 31%, 1);
+--verdigris: hsla(181, 49%, 43%, 1);
+--emerald: hsla(154, 53%, 57%, 1);
+--light-green: hsla(134, 75%, 72%, 1);
+--tea-green: hsla(126, 81%, 88%, 1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -44,6 +60,29 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.fancyPlayer {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: bold;
+}
+
+.playerAvatar {
+  border-width: 3px;
+  border-radius: 50%;
+  width: 36px;
+  img {
+    border-radius: 50%;
+  }
+}
+.playerDot {
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+
 }
 
 .chart {
