@@ -1,6 +1,6 @@
 import { PointTooltipProps, ResponsiveLine } from "@nivo/line";
 import { nivoTheme } from "../utils/nivoTheme";
-import { BasicTooltip } from "@nivo/tooltip";
+import { BasicTooltip, TooltipWrapper } from "@nivo/tooltip";
 import { format, formatDistance, formatRelative, subDays } from "date-fns";
 
 // make sure parent container have a defined height when using
@@ -22,8 +22,10 @@ type Props = {
   data: LineGroupData[];
 };
 
-const Tooltip: React.FunctionComponent<PointTooltipProps> = (props) => {
-  console.log({ props });
+const TooltipThing: React.FunctionComponent<PointTooltipProps> = (props) => {
+  const gameData = JSON.parse(props.point.data.x as any);
+  console.log({ props, gameData });
+  // const getParticipantDataFromGame()
   return (
     <BasicTooltip
       id={props.point.serieId}
@@ -34,9 +36,19 @@ const Tooltip: React.FunctionComponent<PointTooltipProps> = (props) => {
     />
   );
 };
+const Pointer = (props: {}) => {
+  console.log({ props });
+  //   <Image
+  //   src={`http://ddragon.leagueoflegends.com/cdn/10.18.1/img/profileicon/${player.metaData?.profileIconId}.png`}
+  //   width={36}
+  //   height={36}
+  //   alt={`${player.name}'s League Avatar`}
+  // />
+  return <div></div>;
+};
 
 const msToTickerDate = (ms: string | number) => {
-  return format(ms, "M/d hh:mm:aa");
+  return format(ms ?? 0, "M/d hh:mm:aa");
 };
 export const LineChart = ({ data }: Props) => (
   <>
@@ -60,7 +72,8 @@ export const LineChart = ({ data }: Props) => (
         legendOffset: 36,
         legendPosition: "middle",
         truncateTickAt: 0,
-        format: msToTickerDate,
+        format: (game) =>
+          msToTickerDate(JSON.parse(game)?.info?.gameCreation) || "???",
       }}
       axisLeft={{
         tickSize: 5,
@@ -70,14 +83,15 @@ export const LineChart = ({ data }: Props) => (
         legendPosition: "middle",
         truncateTickAt: 0,
       }}
-      pointSize={24}
+      pointSize={10}
       colors={{ datum: "color" }}
       pointColor={{ from: nivoTheme }}
+      // pointSymbol={Pointer}
       pointBorderWidth={2}
       pointBorderColor={{ from: "serieColor" }}
       pointLabelYOffset={-12}
       useMesh={true}
-      tooltip={Tooltip}
+      tooltip={TooltipThing}
     />
   </>
 );
