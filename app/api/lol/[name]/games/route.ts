@@ -5,7 +5,6 @@ export async function GET(
   { params }: { params: { name: string } }
 ) {
   try {
-    console.log({ params, key: process.env.RIOT_API_KEY });
     const reqUrl = new URL(
       `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${params.name}/ids`
     );

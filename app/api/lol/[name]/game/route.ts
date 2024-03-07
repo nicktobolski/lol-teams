@@ -7,7 +7,6 @@ export async function GET(
   try {
     const url = new URL(request.url);
     const mode = url.searchParams.get("mode");
-    console.log({ params, key: process.env.RIOT_API_KEY });
     const reqUrl = new URL(
       `https://americas.api.riotgames.com/lol/match/v5/matches/${params.name}${
         mode === "timeline" ? "/timeline" : ""

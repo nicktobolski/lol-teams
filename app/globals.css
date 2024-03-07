@@ -72,10 +72,13 @@ body {
   border-width: 3px;
   border-radius: 50%;
   width: 36px;
-  img {
-    border-radius: 50%;
-  }
+
 }
+
+.playerAvatar img {
+  border-radius: 50%;
+}
+
 .playerDot {
   border-radius: 50%;
   width: 12px;
