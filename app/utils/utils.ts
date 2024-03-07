@@ -26,12 +26,14 @@ export function getRandomColor() {
 }
 
 export const propertyFunctionMap = {
-  kda: ({ kills, assists, deaths }: ParticipantRecord) =>
-    roundTo2DecimalPlaces(kills + assists) / (deaths === 0 ? 1 : deaths),
+  kda: ({ kills, assists, deaths }: ParticipantRecord) => {
+    if (!kills || !assists) return 0;
+    return roundTo2DecimalPlaces(kills + assists) / (deaths === 0 ? 1 : deaths);
+  },
   totalPings: (record: ParticipantRecord) => {
     const number = ALL_PING_KEYS.reduce((acc, key) => {
       // @ts-ignore
-      return (acc += Number(record[key]));
+      return (acc += Number(record[key] ?? 0));
     }, 0);
     return number;
   },
