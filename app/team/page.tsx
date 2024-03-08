@@ -10,6 +10,7 @@ import {
 import { useQueries } from "@tanstack/react-query";
 import { Suspense, useMemo, useState } from "react";
 import {
+  averageXValues,
   getParticipantsDataForCompareKey,
   intersectionOfArrays,
 } from "../utils/utils";
@@ -90,7 +91,7 @@ const PageContent = () => {
       .map(({ isLoading }) => isLoading)
       .some((isLoading) => isLoading);
 
-  const chartData =
+  const playerChartData =
     players?.map(({ name, color, puuid }, index) => {
       return {
         id: name,
@@ -101,13 +102,13 @@ const PageContent = () => {
               (part) => part.puuid === puuid
             );
             if (!participantData) {
-              return { x: 0, y: 0 };
+              return { x: "{}", y: 0 };
             }
             return {
               y: getParticipantsDataForCompareKey(
                 participantData,
                 compareProperty
-              ),
+              ) as number,
               x: JSON.stringify(game) ?? "",
             };
           })
@@ -115,6 +116,16 @@ const PageContent = () => {
       };
     }) ?? [];
 
+  const teamLineData = averageXValues(
+    playerChartData.map((thing) => thing.data)
+  );
+  const teamChartData = {
+    id: "Team",
+    color: "white",
+    data: teamLineData,
+  };
+
+  // console.log({ teamChartData })
   return (
     <div className="flex w-full flex-wrap md:flex-nowrap gap-4 md:flex-col">
       {isGameDataLoading && (
@@ -152,7 +163,7 @@ const PageContent = () => {
           </div>
 
           <div className={`h-128 w-full chartContainer px-12`}>
-            <LineChart data={chartData} />
+            <LineChart data={[...playerChartData, teamChartData]} />
           </div>
         </motion.div>
       )}

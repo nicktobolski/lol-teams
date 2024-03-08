@@ -1,3 +1,4 @@
+import { LineData } from "../components/LineChart";
 import { ALL_PING_KEYS } from "../consts";
 import { GameStub, ParticipantRecord } from "../hooks/lolHooks";
 
@@ -84,3 +85,22 @@ export function roundTo2DecimalPlaces(num: number): number {
 
 export const formatAndRound = (number: number) =>
   formatNumber(roundTo2DecimalPlaces(number));
+
+export function averageXValues(lineDataArrays: LineData[][]): LineData[] {
+  const sumMap = new Map<string, number>();
+
+  // Summing and x values for each y
+  lineDataArrays.forEach((array) => {
+    array.forEach(({ x, y }) => {
+      sumMap.set(x, (sumMap.get(x) || 0) + y);
+    });
+  });
+
+  // Averaging x values
+  const result: LineData[] = [];
+  sumMap.forEach((y, x) => {
+    const avgY = y / lineDataArrays.length;
+    result.push({ x, y: avgY });
+  });
+  return result;
+}

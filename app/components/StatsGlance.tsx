@@ -4,10 +4,8 @@ import Image from "next/image";
 import { GameStub, PlayerDatum } from "../hooks/lolHooks";
 import {
   formatAndRound,
-  formatNumber,
   getParticipantDataFromGame,
   getParticipantsDataForCompareKey,
-  roundTo2DecimalPlaces,
 } from "../utils/utils";
 
 export type StatsRecord = {
@@ -22,6 +20,13 @@ const teamScore = (scores: StatsRecord[]) => {
     }, 0) / scores.length
   );
 };
+
+const sortStatScoresAsc = (a: StatsRecord, b: StatsRecord): number =>
+  b.score - a.score;
+
+const sortStatScoresDsc = (a: StatsRecord, b: StatsRecord): number =>
+  a.score - b.score;
+
 export const FancyPlayerName = ({ player }: { player: PlayerDatum }) => {
   return (
     <div className="fancyPlayer" style={{ color: player.color }}>
@@ -41,10 +46,7 @@ export const FancyPlayerName = ({ player }: { player: PlayerDatum }) => {
     </div>
   );
 };
-const sortStatScoresAsc = (a: StatsRecord, b: StatsRecord): number =>
-  b.score - a.score;
-const sortStatScoresDsc = (a: StatsRecord, b: StatsRecord): number =>
-  a.score - b.score;
+
 export function StatsGlance({
   games,
 
@@ -103,7 +105,7 @@ export function StatsGlance({
 function StatsAtom({
   scores,
   name,
-  sortFn,
+  sortFn = sortStatScoresAsc,
 }: {
   scores: StatsRecord[];
   name: string;
@@ -115,7 +117,7 @@ function StatsAtom({
       <div className="flex items-center gap-5">
         <div className="font-black text-3xl">{teamScore(scores)}</div>
         <ol className="list-decimal text-sm">
-          {scores.sort(sortFn ?? sortStatScoresAsc).map(({ player, score }) => (
+          {scores.sort(sortFn).map(({ player, score }) => (
             <li key={player.name} className="flex items-center">
               <FancyPlayerName player={player} />: {formatAndRound(score)}
             </li>

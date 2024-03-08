@@ -11,11 +11,12 @@ import { format, formatDistance, formatRelative, subDays } from "date-fns";
 export interface LineGroupData {
   id: string;
   data: LineData[];
+  color: string;
 }
 
 export interface LineData {
-  x: string | number;
-  y: number | string;
+  x: string;
+  y: number;
 }
 
 type Props = {
@@ -24,7 +25,6 @@ type Props = {
 
 const TooltipThing: React.FunctionComponent<PointTooltipProps> = (props) => {
   const gameData = JSON.parse(props.point.data.x as any);
-  console.log({ props, gameData });
   // const getParticipantDataFromGame()
   return (
     <BasicTooltip
@@ -37,7 +37,7 @@ const TooltipThing: React.FunctionComponent<PointTooltipProps> = (props) => {
   );
 };
 const Pointer = (props: {}) => {
-  console.log({ props });
+  // console.log({ props });
   //   <Image
   //   src={`http://ddragon.leagueoflegends.com/cdn/10.18.1/img/profileicon/${player.metaData?.profileIconId}.png`}
   //   width={36}
@@ -50,11 +50,32 @@ const Pointer = (props: {}) => {
 const msToTickerDate = (ms: string | number) => {
   return format(ms ?? 0, "M/d hh:mm:aa");
 };
+
+// const DashedSolidLine = ({ series }: { series: any[] }) => {
+//   return series.map(({ id, data, color }, index) => (
+//     <path
+//       key={id}
+//       style={
+//         index === 4
+//           ? {
+//               // simulate line will dash stroke when index is even
+//               strokeDasharray: "3, 6",
+//               strokeWidth: 3,
+//             }
+//           : {
+//               // simulate line with solid stroke
+//               strokeWidth: 1,
+//             }
+//       }
+//     />
+//   ));
+// };
 export const LineChart = ({ data }: Props) => (
   <>
     <ResponsiveLine
       data={data}
       theme={nivoTheme}
+      // layers={[DashedSolidLine]}
       animate={true}
       margin={{ top: 50, right: 90, bottom: 150, left: 60 }}
       xScale={{ type: "point" }}
