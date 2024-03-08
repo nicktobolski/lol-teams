@@ -14,8 +14,8 @@ import {
   getParticipantsDataForCompareKey,
   intersectionOfArrays,
 } from "../utils/utils";
-import { LineChart } from "../components/LineChart";
-import { Select, SelectItem } from "@nextui-org/react";
+import { LineChart, LineGroupData } from "../components/LineChart";
+import { Checkbox, Select, SelectItem } from "@nextui-org/react";
 import { StatsGlance } from "../components/StatsGlance";
 import { ChartLoading } from "../components/ChartLoading";
 import { motion } from "framer-motion";
@@ -25,6 +25,7 @@ const PageContent = () => {
   const searchParams = useSearchParams();
   const teamMemberNames = searchParams.get("members")?.split(",");
   const [compareProperty, setCompareProperty] = useState("kda");
+  const [shouldShowTeamLine, setShouldShowTeamLine] = useState(false);
   const userQueries = (teamMemberNames || []).map((name) => {
     return {
       queryKey: ["user", name],
@@ -114,14 +115,14 @@ const PageContent = () => {
           })
           .reverse(),
       };
-    }) ?? [];
+    }) ?? ([] as LineGroupData[]);
 
   const teamLineData = averageXValues(
     playerChartData.map((thing) => thing.data)
   );
   const teamChartData = {
     id: "Team",
-    color: "white",
+    color: "var(--team-color)",
     data: teamLineData,
   };
 
@@ -135,9 +136,8 @@ const PageContent = () => {
       )}
       {!isGameDataLoading && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <div className=""> </div>
           <div className="grid grid-cols-12 items-center pt-24 ">
-            <div className="col-start-1 col-end-4 pl-24">
+            <div className="col-start-1 col-end-4 pl-24 flex flex-col gap-2">
               <Select
                 label="Compare"
                 className="max-w-xs"
@@ -151,6 +151,12 @@ const PageContent = () => {
                   </SelectItem>
                 ))}
               </Select>
+              <Checkbox
+                radius="full"
+                onChange={() => setShouldShowTeamLine(!shouldShowTeamLine)}
+              >
+                Show team average
+              </Checkbox>
             </div>
 
             <div className="col-start-5 col-end-12">
@@ -163,7 +169,13 @@ const PageContent = () => {
           </div>
 
           <div className={`h-128 w-full chartContainer px-12`}>
-            <LineChart data={[...playerChartData, teamChartData]} />
+            <LineChart
+              data={
+                shouldShowTeamLine
+                  ? [...playerChartData, teamChartData]
+                  : playerChartData
+              }
+            />
           </div>
         </motion.div>
       )}
@@ -175,7 +187,6 @@ export default function Page() {
     <main className={LAYOUT_CLASSES}>
       <Suspense>
         <PageContent />
-        <Meteors number={20} />
       </Suspense>
     </main>
   );

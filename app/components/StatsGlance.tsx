@@ -7,6 +7,7 @@ import {
   getParticipantDataFromGame,
   getParticipantsDataForCompareKey,
 } from "../utils/utils";
+import { Meteors } from "./ui/Meteors";
 
 export type StatsRecord = {
   player: PlayerDatum;
@@ -38,10 +39,7 @@ export const FancyPlayerName = ({ player }: { player: PlayerDatum }) => {
           alt={`${player.name}'s League Avatar`}
         />
       </div>
-      {/* <div
-        style={{ backgroundColor: player.color }}
-        className="playerDot"
-      ></div> */}
+
       {player.name}
     </div>
   );
@@ -49,7 +47,6 @@ export const FancyPlayerName = ({ player }: { player: PlayerDatum }) => {
 
 export function StatsGlance({
   games,
-
   compareProperty,
   players,
 }: {
@@ -96,8 +93,12 @@ export function StatsGlance({
   return (
     <div className="flex justify-between">
       <StatsAtom scores={average} name="Mean" />
-      <StatsAtom scores={best} name="Best Game" />
-      <StatsAtom scores={worst} name="Worst Game" sortFn={sortStatScoresDsc} />
+      <StatsAtom scores={best} name="Higest in Game" />
+      <StatsAtom
+        scores={worst}
+        name="Lowest in Game"
+        sortFn={sortStatScoresDsc}
+      />
     </div>
   );
 }
@@ -112,10 +113,12 @@ function StatsAtom({
   sortFn?: (a: StatsRecord, b: StatsRecord) => number;
 }) {
   return (
-    <div>
+    <div className="w-full">
       {name}
       <div className="flex items-center gap-5">
-        <div className="font-black text-3xl">{teamScore(scores)}</div>
+        <div className="font-black text-3xl team-color">
+          {teamScore(scores)}
+        </div>
         <ol className="list-decimal text-sm">
           {scores.sort(sortFn).map(({ player, score }) => (
             <li key={player.name} className="flex items-center">

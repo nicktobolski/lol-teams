@@ -1,7 +1,7 @@
 import { PointTooltipProps, ResponsiveLine } from "@nivo/line";
 import { nivoTheme } from "../utils/nivoTheme";
-import { BasicTooltip, TooltipWrapper } from "@nivo/tooltip";
-import { format, formatDistance, formatRelative, subDays } from "date-fns";
+import { BasicTooltip } from "@nivo/tooltip";
+import { format } from "date-fns";
 
 // make sure parent container have a defined height when using
 // responsive component, otherwise height will be 0 and

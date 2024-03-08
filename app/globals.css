@@ -21,6 +21,7 @@
   --emerald: hsl(154, 53%, 57%);
   --light-green: hsl(134, 75%, 72%);
   --tea-green: hsl(126, 81%, 88%);
+  --team-color: rgba(255,255,255,0.65);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -87,6 +88,10 @@ body {
 
 }
 
+.team-color {
+  color: var(--team-color);
+}
+
 .chart {
   opacity: 0;
 }
@@ -103,3 +108,4 @@ body {
     opacity: 100;
   }
 }
+
