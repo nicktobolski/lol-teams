@@ -66,9 +66,21 @@ export function getParticipantDataFromGame(
   };
 }
 
-export const roundTo2DecimalPlaces = (num: number) =>
-  (Math.round(num + Number.EPSILON) * 100) / 100;
+// export const roundTo2DecimalPlaces = (num: number) =>
+//   (Math.round(num + Number.EPSILON) * 100) / 100;
 
-export const formatNumber = new Intl.NumberFormat("en-US", {
-  maximumSignificantDigits: 5,
-}).format;
+export const formatNumber = new Intl.NumberFormat("en-US", {}).format;
+
+export function roundTo2DecimalPlaces(num: number): number {
+  // Check if the number has any decimal places
+  if (!Number.isInteger(num)) {
+    // Round to two decimal places
+    return Math.round(num * 100) / 100;
+  }
+
+  // Return the original number if it has no decimal places
+  return num;
+}
+
+export const formatAndRound = (number: number) =>
+  formatNumber(roundTo2DecimalPlaces(number));

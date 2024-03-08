@@ -18,6 +18,7 @@ import { Select, SelectItem } from "@nextui-org/react";
 import { StatsGlance } from "../components/StatsGlance";
 import { ChartLoading } from "../components/ChartLoading";
 import { motion } from "framer-motion";
+import { Meteors } from "../components/ui/Meteors";
 
 const PageContent = () => {
   const searchParams = useSearchParams();
@@ -141,11 +142,9 @@ const PageContent = () => {
               </Select>
             </div>
 
-            <div className="col-start-5 col-end-10">
+            <div className="col-start-5 col-end-12">
               <StatsGlance
                 games={justGames}
-                puuids={puuids}
-                teamMemberNames={teamMemberNames ?? []}
                 compareProperty={compareProperty}
                 players={players ?? []}
               />
@@ -165,6 +164,7 @@ export default function Page() {
     <main className={LAYOUT_CLASSES}>
       <Suspense>
         <PageContent />
+        <Meteors number={20} />
       </Suspense>
     </main>
   );

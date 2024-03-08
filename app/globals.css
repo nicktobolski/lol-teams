@@ -69,9 +69,9 @@ body {
 }
 
 .playerAvatar {
-  border-width: 3px;
+  border-width: 0px;
   border-radius: 50%;
-  width: 36px;
+  width: 18px;
 
 }
 
