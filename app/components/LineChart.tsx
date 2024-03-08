@@ -25,6 +25,7 @@ type Props = {
 
 const TooltipThing: React.FunctionComponent<PointTooltipProps> = (props) => {
   const gameData = JSON.parse(props.point.data.x as any);
+  console.log({ gameData });
   // const getParticipantDataFromGame()
   return (
     <BasicTooltip

@@ -121,7 +121,10 @@ function StatsAtom({
         </div>
         <ol className="list-decimal text-sm">
           {scores.sort(sortFn).map(({ player, score }) => (
-            <li key={player.name} className="flex items-center">
+            <li
+              key={player.name}
+              className="flex items-center whitespace-nowrap"
+            >
               <FancyPlayerName player={player} />: {formatAndRound(score)}
             </li>
           ))}

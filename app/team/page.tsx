@@ -93,7 +93,7 @@ const PageContent = () => {
       .some((isLoading) => isLoading);
 
   const playerChartData =
-    players?.map(({ name, color, puuid }, index) => {
+    players?.map(({ name, color, puuid }) => {
       return {
         id: name,
         color,
@@ -105,6 +105,7 @@ const PageContent = () => {
             if (!participantData) {
               return { x: "{}", y: 0 };
             }
+            console.log({ game });
             return {
               y: getParticipantsDataForCompareKey(
                 participantData,
