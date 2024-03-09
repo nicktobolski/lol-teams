@@ -16,7 +16,7 @@ import {
   intersectionOfArrays,
   teamScore,
 } from "../utils/utils";
-import { LineChart, LineGroupData } from "../components/LineChart";
+import { LineChart, LineGroupData, LineType } from "../components/LineChart";
 import { Checkbox, Select, SelectItem } from "@nextui-org/react";
 import { StatsGlance, StatsRecord } from "../components/StatsGlance";
 import { ChartLoading } from "../components/ChartLoading";
@@ -99,6 +99,7 @@ const PageContent = () => {
       return {
         id: name,
         color,
+        lineType: "solid" as LineType,
         data: justGames
           .map((game) => {
             const participantData = game?.info.participants.find(
@@ -107,7 +108,6 @@ const PageContent = () => {
             if (!participantData) {
               return { x: "0", y: 0 };
             }
-            console.log({ game });
             return {
               y: getParticipantsDataForCompareKey(
                 participantData,
@@ -115,6 +115,7 @@ const PageContent = () => {
               ) as number,
               data: game,
               x: game?.info.gameCreation.toString() ?? "0",
+              participantData,
             };
           })
           .reverse(),
@@ -127,7 +128,7 @@ const PageContent = () => {
   const teamChartData = {
     id: "Team",
     color: "var(--team-color)",
-    lineType: "dashed",
+    lineType: "dashed" as LineType,
     data: teamLineData,
   };
 
@@ -168,7 +169,6 @@ const PageContent = () => {
 
   playerChartData?.[0]?.data.forEach((point) => {
     // if any player in puuids won the game, add a marker on the x axis at the appropriate key
-    console.log({ point: point.data });
     const anyTeamMembersRecords = point.data?.info.participants.find(
       ({ puuid }) => puuid === puuids[0]
     );
@@ -177,7 +177,7 @@ const PageContent = () => {
       chartMarkers.push({
         axis: "x",
         value: point?.data?.info.gameCreation.toString() ?? "0",
-        lineType: "solid",
+        lineType: "solid" as LineType,
         icon: "🏆",
       });
   });

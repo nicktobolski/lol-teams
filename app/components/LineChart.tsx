@@ -2,8 +2,9 @@ import { PointTooltipProps, ResponsiveLine } from "@nivo/line";
 import { nivoTheme } from "../utils/nivoTheme";
 import { BasicTooltip } from "@nivo/tooltip";
 import { format } from "date-fns";
-import { GameStub } from "../hooks/lolHooks";
+import { GameStub, ParticipantRecord } from "../hooks/lolHooks";
 import { getParticipantDataFromGame } from "../utils/utils";
+import Image from "next/image";
 
 // make sure parent container have a defined height when using
 // responsive component, otherwise height will be 0 and
@@ -22,6 +23,7 @@ export interface LineData {
   x: string;
   y: number;
   data?: GameStub;
+  participantData?: ParticipantRecord;
 }
 
 type Props = {
@@ -36,17 +38,35 @@ type Props = {
 };
 
 const TooltipThing: React.FunctionComponent<PointTooltipProps> = (props) => {
-  const gameData = props.point.data;
-  console.log({ gameData });
-  // const getParticipantDataFromGame()
+  const pointData = props.point.data as LineData;
   return (
-    <BasicTooltip
-      id={props.point.serieId}
-      value={`${new Intl.NumberFormat("en-US").format(
-        props.point.data.y as number
-      )}`}
-      enableChip
-    />
+    <div
+      style={{ borderColor: props.point.color ?? "transparent" }}
+      className="chartTooltip px-3 py-1"
+    >
+      <div>
+        <span className="font-black">
+          {props.point.serieId} {props.point.color}:{" "}
+        </span>
+        {`${new Intl.NumberFormat("en-US").format(
+          props.point.data.y as number
+        )}`}
+      </div>
+      {pointData.participantData && (
+        <div className="flex gap-2">
+          <Image
+            src={`http://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/${pointData.participantData?.championName}.png`}
+            width={32}
+            height={32}
+            alt={`Player avatar`}
+            className="avatar"
+          />
+          <div className="flex items-center">
+            {pointData.participantData?.championName}
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 const Pointer = (props: {}) => {

@@ -92,9 +92,20 @@ body {
   color: var(--team-color);
 }
 
+.chartTooltip {
+  background-color: black;
+  border-width:2px;
+  border-radius: 12px;
+}
+
+.chartTooltip .avatar {
+  border-radius: 12px;
+}
+
 .chart {
   opacity: 0;
 }
+
 
 .fade-in {
   animation: fade-in 3s;
