@@ -1,17 +1,17 @@
 export const nivoTheme = {
   background: "#000000",
-  crosshair: {
-    line: {
-      stroke: "#774dd7",
-      strokeOpacity: 1,
-      strokeWidth: 2,
-    },
-  },
   text: {
     fontSize: 16,
     fill: "#ffffff",
     outlineWidth: 0,
     outlineColor: "transparent",
+  },
+  crosshair: {
+    line: {
+      stroke: "var(--dark-blue)",
+      strokeOpacity: 1,
+      strokeWidth: 1,
+    },
   },
   axis: {
     domain: {
@@ -107,6 +107,7 @@ export const nivoTheme = {
       color: "#ffffff",
       fontSize: 16,
     },
+
     basic: {},
     chip: {},
     table: {},

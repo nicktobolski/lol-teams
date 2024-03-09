@@ -179,6 +179,7 @@ export const LineChart = ({ data, markers }: Props) => (
         "lines",
         // DashedLine,
         "slices",
+        "crosshair",
         "axes",
         "legends",
         "points",
