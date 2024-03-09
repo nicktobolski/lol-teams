@@ -8,7 +8,6 @@ import {
   getParticipantsDataForCompareKey,
   teamScore,
 } from "../utils/utils";
-import { Meteors } from "./ui/Meteors";
 
 export type StatsRecord = {
   player: PlayerDatum;
@@ -42,11 +41,12 @@ export function StatsGlance({
   games,
   compareProperty,
   players,
+  teamWinRate,
 }: {
   games: (GameStub | undefined)[];
-
   compareProperty: string;
   players: PlayerDatum[];
+  teamWinRate: number | string;
 }) {
   const { average, best, worst } = players.reduce<{
     average: StatsRecord[];
@@ -84,36 +84,39 @@ export function StatsGlance({
   );
 
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-start gap-16">
       <StatsAtom scores={average} name="Mean" />
-      <StatsAtom scores={best} name="Higest in Game" />
+      <StatsAtom scores={best} name="Highest in Game" />
       <StatsAtom
         scores={worst}
         name="Lowest in Game"
         sortFn={sortStatScoresDsc}
       />
+      <StatsAtom bigNumber={teamWinRate} name="Win %" />
     </div>
   );
 }
 
 function StatsAtom({
+  bigNumber,
   scores,
   name,
   sortFn = sortStatScoresAsc,
 }: {
-  scores: StatsRecord[];
+  bigNumber?: string | number;
+  scores?: StatsRecord[];
   name: string;
   sortFn?: (a: StatsRecord, b: StatsRecord) => number;
 }) {
   return (
-    <div className="w-full">
-      {name}
+    <div className="">
+      <div className="pb-2">{name}</div>
       <div className="flex items-center gap-5">
         <div className="font-black text-3xl team-color">
-          {teamScore(scores)}
+          {bigNumber ?? teamScore(scores ?? [])}
         </div>
         <ol className="list-decimal text-sm">
-          {scores.sort(sortFn).map(({ player, score }) => (
+          {scores?.sort(sortFn).map(({ player, score }) => (
             <li
               key={player.name}
               className="flex items-center whitespace-nowrap"

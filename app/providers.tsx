@@ -7,17 +7,19 @@ import { useState } from "react";
 import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { MotionConfig } from "framer-motion";
+import { createIDBPersister } from "./utils/indexedDbPersister";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 export default function Providers({ children }: { children: React.ReactNode }) {
-  const [client] = useState(new QueryClient());
-
+  const [client] = useState(new QueryClient({}));
+  const persister = createIDBPersister();
   return (
-    <QueryClientProvider client={client}>
+    <PersistQueryClientProvider client={client} persistOptions={{ persister }}>
       <NextUIProvider>
         <NextThemesProvider attribute="class" defaultTheme="dark">
           <MotionConfig transition={{ duration: 0.5 }}>{children}</MotionConfig>
           <ReactQueryDevtools initialIsOpen={false} />
         </NextThemesProvider>
       </NextUIProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 }

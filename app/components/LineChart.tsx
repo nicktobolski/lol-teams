@@ -92,14 +92,14 @@ const styleByType = {
     strokeWidth: 2,
   },
   thickDashed: {
-    strokeDasharray: "5, 5",
-    strokeWidth: 5,
+    strokeDasharray: "10, 1",
+    strokeWidth: 10,
   },
   solid: {
     strokeWidth: 2,
   },
   thickSolid: {
-    strokeWidth: 10,
+    strokeWidth: 8,
   },
 };
 
@@ -180,12 +180,12 @@ export const LineChart = ({ data, markers }: Props) => (
       pointLabelYOffset={-12}
       useMesh={true}
       layers={[
-        "grid",
+        // "grid",
         "markers",
         "areas",
         "lines",
         // DashedLine,
-        "slices",
+        // "slices",
         "crosshair",
         "axes",
         "legends",

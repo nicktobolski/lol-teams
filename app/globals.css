@@ -22,7 +22,7 @@
   --light-green: hsl(134, 75%, 72%);
   --tea-green: hsl(126, 81%, 88%);
   --team-color: rgba(255,255,255,0.69);
-  --win-highlight-color: hsla(154, 53%, 57%, 0.4);
+  --win-highlight-color: hsla(154, 53%, 57%, 0.3);
 }
 
 @media (prefers-color-scheme: dark) {
