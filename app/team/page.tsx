@@ -233,6 +233,7 @@ const PageContent = () => {
                 onChange={(event) => setCompareProperty(event.target.value)}
                 defaultSelectedKeys={[compareProperty]}
                 size="lg"
+                color="primary"
               >
                 {DATA_COMPARE_KEYS.map((key) => (
                   <SelectItem key={key} value={key}>
