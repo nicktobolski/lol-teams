@@ -113,7 +113,8 @@ const PageContent = () => {
                 participantData,
                 compareProperty
               ) as number,
-              x: JSON.stringify(game) ?? "",
+              data: game,
+              x: game?.info.gameCreation.toString() ?? "0",
             };
           })
           .reverse(),

@@ -2,6 +2,7 @@ import { PointTooltipProps, ResponsiveLine } from "@nivo/line";
 import { nivoTheme } from "../utils/nivoTheme";
 import { BasicTooltip } from "@nivo/tooltip";
 import { format } from "date-fns";
+import { GameStub } from "../hooks/lolHooks";
 
 // make sure parent container have a defined height when using
 // responsive component, otherwise height will be 0 and
@@ -18,6 +19,7 @@ export interface LineGroupData {
 export interface LineData {
   x: string;
   y: number;
+  data?: GameStub;
 }
 
 type Props = {
@@ -26,8 +28,8 @@ type Props = {
 };
 
 const TooltipThing: React.FunctionComponent<PointTooltipProps> = (props) => {
-  const gameData = JSON.parse(props.point.data.x as any);
-  // console.log({ gameData });
+  const gameData = props.point.data;
+  console.log({ gameData });
   // const getParticipantDataFromGame()
   return (
     <BasicTooltip
@@ -51,7 +53,9 @@ const Pointer = (props: {}) => {
 };
 
 const msToTickerDate = (ms: string | number) => {
-  return format(ms ?? 0, "M/d hh:mm:aa");
+  return format(ms ?? 0, "M/d h:mma")
+    .toLowerCase()
+    .slice(0, -1);
 };
 
 // const DashedSolidLine = ({ series }: { series: any[] }) => {
@@ -144,8 +148,7 @@ export const LineChart = ({ data, markers }: Props) => (
         legendOffset: 36,
         legendPosition: "middle",
         truncateTickAt: 0,
-        format: (game) =>
-          msToTickerDate(JSON.parse(game)?.info?.gameCreation) || "???",
+        format: (ms) => msToTickerDate(Number(ms)) || "???",
       }}
       axisLeft={{
         tickSize: 5,
@@ -155,7 +158,7 @@ export const LineChart = ({ data, markers }: Props) => (
         legendPosition: "middle",
         truncateTickAt: 0,
       }}
-      pointSize={10}
+      pointSize={7}
       colors={{ datum: "color" }}
       pointColor={{ from: nivoTheme }}
       // pointSymbol={Pointer}
@@ -167,7 +170,8 @@ export const LineChart = ({ data, markers }: Props) => (
         "grid",
         "markers",
         "areas",
-        DashedLine,
+        "lines",
+        // DashedLine,
         "slices",
         "axes",
         "legends",
