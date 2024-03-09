@@ -84,8 +84,11 @@ const PageContent = () => {
     return intersectionOfArrays(...allGames);
   }, [gameIdsResults]);
 
-  const games2get =
-    gameCountRequested && gameCountRequested < 51 ? gameCountRequested : 40;
+  const games2get = gameCountRequested
+    ? gameCountRequested < 51
+      ? gameCountRequested
+      : 50
+    : 40;
   const gameQueries = (relevantGameIds.slice(0, games2get) || []).map((id) => {
     return {
       queryKey: ["game", id],
@@ -260,9 +263,9 @@ const PageContent = () => {
                 defaultValue={linesToInclude}
               >
                 <div className="flex gap-4">
-                  <Radio value="both">Both</Radio>
                   <Radio value="team">Team</Radio>
                   <Radio value="players">Players</Radio>
+                  <Radio value="both">Both</Radio>
                 </div>
               </RadioGroup>
             </div>
@@ -272,7 +275,7 @@ const PageContent = () => {
                 games={justGames}
                 compareProperty={compareProperty}
                 players={players ?? []}
-                teamWinRate={totalWins / justGames?.length ?? 1}
+                teamWinRate={`${(totalWins / (justGames?.length ?? 1)) * 100}%`}
               />
             </div>
           </div>

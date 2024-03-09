@@ -137,7 +137,7 @@ export const LineChart = ({ data, markers }: Props) => (
       data={data}
       theme={nivoTheme}
       animate={true}
-      margin={{ top: 50, right: 90, bottom: 150, left: 60 }}
+      margin={{ top: 50, right: 90, bottom: 60, left: 100 }}
       xScale={{ type: "point" }}
       yScale={{
         type: "linear",

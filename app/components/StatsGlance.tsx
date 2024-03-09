@@ -84,15 +84,17 @@ export function StatsGlance({
   );
 
   return (
-    <div className="flex justify-start gap-16">
-      <StatsAtom scores={average} name="Mean" />
-      <StatsAtom scores={best} name="Highest in Game" />
-      <StatsAtom
-        scores={worst}
-        name="Lowest in Game"
-        sortFn={sortStatScoresDsc}
-      />
-      <StatsAtom bigNumber={teamWinRate} name="Win %" />
+    <div className="flex justify-between ">
+      <div className="flex flex-row gap-16">
+        <StatsAtom scores={average} name="Mean" />
+        <StatsAtom scores={best} name="Highest in Game" />
+        <StatsAtom
+          scores={worst}
+          name="Lowest in Game"
+          sortFn={sortStatScoresDsc}
+        />
+      </div>
+      <StatsAtom bigNumber={teamWinRate} name="Team Win Rate" />
     </div>
   );
 }
