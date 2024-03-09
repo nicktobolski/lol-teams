@@ -11,6 +11,7 @@ import { useQueries } from "@tanstack/react-query";
 import { Suspense, useMemo, useState } from "react";
 import {
   averageXValues,
+  formatAndRound,
   getParticipantDataFromGame,
   getParticipantsDataForCompareKey,
   intersectionOfArrays,
@@ -37,7 +38,6 @@ const PageContent = () => {
   const gameCountRequested = parseInt(searchParams.get("count") ?? "0");
   const [compareProperty, setCompareProperty] = useState("kda");
   const [shouldShowTeamLine, setShouldShowTeamLine] = useState(true);
-  const [shouldShowPlayerLines, setShouldShowPlayerLines] = useState(false);
   const [linesToInclude, setLinesToInclude] = useState("both");
   const userQueries = (teamMemberNames || []).map((name) => {
     return {
