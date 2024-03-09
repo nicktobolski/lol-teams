@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <main className={LAYOUT_CLASSES}>
       <SparkleBomb />
-      <Link href="/team?members=tobogiorgio,troge,lextobol">
+      <Link href="/team?members=tobogiorgio,troge,lextobol" className="pb-5">
         Lookup ur team
       </Link>
     </main>
