@@ -241,7 +241,7 @@ const PageContent = () => {
       {!isGameDataLoading && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <div className="grid grid-cols-12 items-center pt-24 ">
-            <div className="col-start-1 col-end-4 pl-24 flex flex-col gap-4 pt-16">
+            <div className="col-start-1 col-end-4 pl-24 pr-5 flex flex-col gap-4 pt-16">
               <Select
                 label="Compare"
                 className="max-w-xs"

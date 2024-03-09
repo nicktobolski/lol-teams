@@ -99,7 +99,7 @@ const styleByType = {
     strokeWidth: 2,
   },
   thickSolid: {
-    strokeWidth: 8,
+    strokeWidth: 18,
   },
 };
 
