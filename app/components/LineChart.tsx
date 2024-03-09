@@ -12,6 +12,7 @@ export interface LineGroupData {
   id: string;
   data: LineData[];
   color: string;
+  lineType?: "dashed" | "solid";
 }
 
 export interface LineData {
@@ -21,11 +22,12 @@ export interface LineData {
 
 type Props = {
   data: LineGroupData[];
+  markers?: { color: string; axis: "y" | "x"; value: any }[];
 };
 
 const TooltipThing: React.FunctionComponent<PointTooltipProps> = (props) => {
   const gameData = JSON.parse(props.point.data.x as any);
-  console.log({ gameData });
+  // console.log({ gameData });
   // const getParticipantDataFromGame()
   return (
     <BasicTooltip
@@ -71,12 +73,49 @@ const msToTickerDate = (ms: string | number) => {
 //     />
 //   ));
 // };
-export const LineChart = ({ data }: Props) => (
+const styleByType = {
+  dashed: {
+    strokeDasharray: "5, 5",
+    strokeWidth: 2,
+  },
+  solid: {
+    strokeWidth: 2,
+  },
+};
+
+const DashedLine: any = ({
+  series,
+  lineGenerator,
+  xScale,
+  yScale,
+}: {
+  series: LineGroupData[];
+  lineGenerator: any;
+  xScale: any;
+  yScale: any;
+}) => {
+  return series.map(({ id, data, color, lineType }) => {
+    return (
+      <path
+        key={id}
+        d={lineGenerator(
+          data.map((d: any) => ({
+            x: xScale(d.data.x),
+            y: yScale(d.data.y),
+          }))
+        )}
+        fill="none"
+        stroke={color}
+        style={styleByType[lineType ?? "solid"]}
+      />
+    );
+  });
+};
+export const LineChart = ({ data, markers }: Props) => (
   <>
     <ResponsiveLine
       data={data}
       theme={nivoTheme}
-      // layers={[DashedSolidLine]}
       animate={true}
       margin={{ top: 50, right: 90, bottom: 150, left: 60 }}
       xScale={{ type: "point" }}
@@ -85,6 +124,17 @@ export const LineChart = ({ data }: Props) => (
         min: 0,
         max: "auto",
       }}
+      markers={(markers ?? []).map((marker) => ({
+        axis: marker.axis,
+        legend: "y marker at 0",
+        legendPosition: "bottom-left",
+        lineStyle: {
+          stroke: marker.color ?? "#b0413e",
+          strokeWidth: 1,
+          strokeDasharray: "5, 5",
+        },
+        value: marker.value,
+      }))}
       axisTop={null}
       axisRight={null}
       axisBottom={{
@@ -113,6 +163,17 @@ export const LineChart = ({ data }: Props) => (
       pointBorderColor={{ from: "serieColor" }}
       pointLabelYOffset={-12}
       useMesh={true}
+      layers={[
+        "grid",
+        "markers",
+        "areas",
+        DashedLine,
+        "slices",
+        "axes",
+        "legends",
+        "points",
+        "mesh",
+      ]}
       tooltip={TooltipThing}
     />
   </>

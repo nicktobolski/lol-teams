@@ -1,4 +1,5 @@
 import { LineData } from "../components/LineChart";
+import { StatsRecord } from "../components/StatsGlance";
 import { ALL_PING_KEYS } from "../consts";
 import { GameStub, ParticipantRecord } from "../hooks/lolHooks";
 
@@ -104,3 +105,11 @@ export function averageXValues(lineDataArrays: LineData[][]): LineData[] {
   });
   return result;
 }
+
+export const teamScore = (scores: StatsRecord[]) => {
+  return formatAndRound(
+    scores.reduce((acc, statScore) => {
+      return (acc += statScore.score);
+    }, 0) / scores.length
+  );
+};

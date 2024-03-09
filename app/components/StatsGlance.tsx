@@ -6,20 +6,13 @@ import {
   formatAndRound,
   getParticipantDataFromGame,
   getParticipantsDataForCompareKey,
+  teamScore,
 } from "../utils/utils";
 import { Meteors } from "./ui/Meteors";
 
 export type StatsRecord = {
   player: PlayerDatum;
   score: number;
-};
-
-const teamScore = (scores: StatsRecord[]) => {
-  return formatAndRound(
-    scores.reduce((acc, statScore) => {
-      return (acc += statScore.score);
-    }, 0) / scores.length
-  );
 };
 
 const sortStatScoresAsc = (a: StatsRecord, b: StatsRecord): number =>

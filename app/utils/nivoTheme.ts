@@ -1,5 +1,12 @@
 export const nivoTheme = {
   background: "#000000",
+  crosshair: {
+    line: {
+      stroke: "#774dd7",
+      strokeOpacity: 1,
+      strokeWidth: 2,
+    },
+  },
   text: {
     fontSize: 16,
     fill: "#ffffff",

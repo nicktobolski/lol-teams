@@ -11,12 +11,14 @@ import { useQueries } from "@tanstack/react-query";
 import { Suspense, useMemo, useState } from "react";
 import {
   averageXValues,
+  getParticipantDataFromGame,
   getParticipantsDataForCompareKey,
   intersectionOfArrays,
+  teamScore,
 } from "../utils/utils";
 import { LineChart, LineGroupData } from "../components/LineChart";
 import { Checkbox, Select, SelectItem } from "@nextui-org/react";
-import { StatsGlance } from "../components/StatsGlance";
+import { StatsGlance, StatsRecord } from "../components/StatsGlance";
 import { ChartLoading } from "../components/ChartLoading";
 import { motion } from "framer-motion";
 import { Meteors } from "../components/ui/Meteors";
@@ -124,10 +126,45 @@ const PageContent = () => {
   const teamChartData = {
     id: "Team",
     color: "var(--team-color)",
+    lineType: "dashed",
     data: teamLineData,
   };
 
-  // console.log({ teamChartData })
+  const { average } = players.reduce<{
+    average: StatsRecord[];
+  }>(
+    (acc, player) => {
+      const scores = justGames
+        .map(getParticipantDataFromGame(player.puuid))
+        .map((participantData) =>
+          getParticipantsDataForCompareKey(participantData, compareProperty)
+        );
+      const avgScore =
+        scores.reduce((acc, score) => {
+          acc += score;
+          return acc;
+        }, 0) / justGames.length;
+
+      acc.average.push({ player, score: avgScore });
+
+      return acc;
+    },
+    {
+      average: [],
+    }
+  );
+
+  const teamAverage = teamScore(average);
+  const chartMarkers = [] as any;
+
+  if (shouldShowTeamLine) {
+    chartMarkers.push({
+      axis: "y",
+      color: "var(--team-color)",
+      value: teamAverage.replace(",", ""),
+    });
+  }
+
   return (
     <div className="flex w-full flex-wrap md:flex-nowrap gap-4 md:flex-col">
       {isGameDataLoading && (
@@ -176,6 +213,7 @@ const PageContent = () => {
                   ? [...playerChartData, teamChartData]
                   : playerChartData
               }
+              markers={chartMarkers}
             />
           </div>
         </motion.div>
