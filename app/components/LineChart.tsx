@@ -18,7 +18,7 @@ export interface LineGroupData {
   lineType?: LineType;
 }
 
-export type LineType = "dashed" | "solid";
+export type LineType = "dashed" | "solid" | "thickDashed" | "thickSolid";
 export interface LineData {
   x: string;
   y: number;
@@ -91,8 +91,15 @@ const styleByType = {
     strokeDasharray: "5, 5",
     strokeWidth: 2,
   },
+  thickDashed: {
+    strokeDasharray: "5, 5",
+    strokeWidth: 5,
+  },
   solid: {
     strokeWidth: 2,
+  },
+  thickSolid: {
+    strokeWidth: 10,
   },
 };
 

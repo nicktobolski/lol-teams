@@ -17,7 +17,14 @@ import {
   teamScore,
 } from "../utils/utils";
 import { LineChart, LineGroupData, LineType } from "../components/LineChart";
-import { Checkbox, Select, SelectItem } from "@nextui-org/react";
+import {
+  Button,
+  Checkbox,
+  Radio,
+  RadioGroup,
+  Select,
+  SelectItem,
+} from "@nextui-org/react";
 import { StatsGlance, StatsRecord } from "../components/StatsGlance";
 import { ChartLoading } from "../components/ChartLoading";
 import { motion } from "framer-motion";
@@ -27,7 +34,9 @@ const PageContent = () => {
   const searchParams = useSearchParams();
   const teamMemberNames = searchParams.get("members")?.split(",");
   const [compareProperty, setCompareProperty] = useState("kda");
-  const [shouldShowTeamLine, setShouldShowTeamLine] = useState(false);
+  const [shouldShowTeamLine, setShouldShowTeamLine] = useState(true);
+  const [shouldShowPlayerLines, setShouldShowPlayerLines] = useState(false);
+  const [linesToInclude, setLinesToInclude] = useState("both");
   const userQueries = (teamMemberNames || []).map((name) => {
     return {
       queryKey: ["user", name],
@@ -167,19 +176,44 @@ const PageContent = () => {
     });
   }
 
+  const allChartData = useMemo(() => {
+    const newChartData = [];
+    if (linesToInclude === "both") {
+      newChartData.push(teamChartData);
+      newChartData.push(...playerChartData);
+    } else if (linesToInclude === "team") {
+      newChartData.push(teamChartData);
+    } else if (linesToInclude === "players") {
+      newChartData.push(...playerChartData);
+    }
+
+    return newChartData;
+  }, [playerChartData, teamChartData, linesToInclude]);
+
   playerChartData?.[0]?.data.forEach((point) => {
     // if any player in puuids won the game, add a marker on the x axis at the appropriate key
     const anyTeamMembersRecords = point.data?.info.participants.find(
       ({ puuid }) => puuid === puuids[0]
     );
-
+    console.log({ anyTeamMembersRecords });
     if (anyTeamMembersRecords?.win)
       chartMarkers.push({
         axis: "x",
         value: point?.data?.info.gameCreation.toString() ?? "0",
         lineType: "solid" as LineType,
+        color: "var(--win-highlight-color)",
         icon: "🏆",
       });
+
+    if (anyTeamMembersRecords?.teamEarlySurrendered) {
+      console.log("it happen lol");
+      chartMarkers.push({
+        axis: "x",
+        value: point?.data?.info.gameCreation.toString() ?? "0",
+        lineType: "solid" as LineType,
+        icon: "🙈",
+      });
+    }
   });
 
   return (
@@ -192,7 +226,7 @@ const PageContent = () => {
       {!isGameDataLoading && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <div className="grid grid-cols-12 items-center pt-24 ">
-            <div className="col-start-1 col-end-4 pl-24 flex flex-col gap-2">
+            <div className="col-start-1 col-end-4 pl-24 flex flex-col gap-4">
               <Select
                 label="Compare"
                 className="max-w-xs"
@@ -206,12 +240,19 @@ const PageContent = () => {
                   </SelectItem>
                 ))}
               </Select>
-              <Checkbox
-                radius="full"
-                onChange={() => setShouldShowTeamLine(!shouldShowTeamLine)}
+              <RadioGroup
+                aria-label="Lines to include"
+                orientation="horizontal"
+                onChange={(event) => setLinesToInclude(event.target.value)}
+                className="pl-2"
+                defaultValue={linesToInclude}
               >
-                Show team average
-              </Checkbox>
+                <div className="flex gap-4">
+                  <Radio value="both">Both</Radio>
+                  <Radio value="team">Team</Radio>
+                  <Radio value="players">Players</Radio>
+                </div>
+              </RadioGroup>
             </div>
 
             <div className="col-start-5 col-end-12">
@@ -224,14 +265,7 @@ const PageContent = () => {
           </div>
 
           <div className={`h-128 w-full chartContainer px-12`}>
-            <LineChart
-              data={
-                shouldShowTeamLine
-                  ? [...playerChartData, teamChartData]
-                  : playerChartData
-              }
-              markers={chartMarkers}
-            />
+            <LineChart data={allChartData} markers={chartMarkers} />
           </div>
         </motion.div>
       )}

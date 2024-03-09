@@ -1,5 +1,5 @@
 export const LAYOUT_CLASSES =
-  "flex min-h-screen flex-col items-center justify-between dark text-foreground bg-background";
+  "flex min-h-screen flex-col items-center justify-around dark text-foreground bg-background";
 export const ALL_PING_KEYS = [
   "allInPings",
   "assistMePings",
