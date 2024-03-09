@@ -3,6 +3,7 @@ import { nivoTheme } from "../utils/nivoTheme";
 import { BasicTooltip } from "@nivo/tooltip";
 import { format } from "date-fns";
 import { GameStub } from "../hooks/lolHooks";
+import { getParticipantDataFromGame } from "../utils/utils";
 
 // make sure parent container have a defined height when using
 // responsive component, otherwise height will be 0 and
@@ -13,9 +14,10 @@ export interface LineGroupData {
   id: string;
   data: LineData[];
   color: string;
-  lineType?: "dashed" | "solid";
+  lineType?: LineType;
 }
 
+export type LineType = "dashed" | "solid";
 export interface LineData {
   x: string;
   y: number;
@@ -24,7 +26,13 @@ export interface LineData {
 
 type Props = {
   data: LineGroupData[];
-  markers?: { color: string; axis: "y" | "x"; value: any }[];
+  markers?: {
+    color: string;
+    axis: "y" | "x";
+    value: any;
+    lineType?: LineType;
+    icon?: string;
+  }[];
 };
 
 const TooltipThing: React.FunctionComponent<PointTooltipProps> = (props) => {
@@ -53,30 +61,11 @@ const Pointer = (props: {}) => {
 };
 
 const msToTickerDate = (ms: string | number) => {
-  return format(ms ?? 0, "M/d h:mma")
+  return format(ms ?? 0, "M/d ")
     .toLowerCase()
     .slice(0, -1);
 };
 
-// const DashedSolidLine = ({ series }: { series: any[] }) => {
-//   return series.map(({ id, data, color }, index) => (
-//     <path
-//       key={id}
-//       style={
-//         index === 4
-//           ? {
-//               // simulate line will dash stroke when index is even
-//               strokeDasharray: "3, 6",
-//               strokeWidth: 3,
-//             }
-//           : {
-//               // simulate line with solid stroke
-//               strokeWidth: 1,
-//             }
-//       }
-//     />
-//   ));
-// };
 const styleByType = {
   dashed: {
     strokeDasharray: "5, 5",
@@ -87,34 +76,34 @@ const styleByType = {
   },
 };
 
-const DashedLine: any = ({
-  series,
-  lineGenerator,
-  xScale,
-  yScale,
-}: {
-  series: LineGroupData[];
-  lineGenerator: any;
-  xScale: any;
-  yScale: any;
-}) => {
-  return series.map(({ id, data, color, lineType }) => {
-    return (
-      <path
-        key={id}
-        d={lineGenerator(
-          data.map((d: any) => ({
-            x: xScale(d.data.x),
-            y: yScale(d.data.y),
-          }))
-        )}
-        fill="none"
-        stroke={color}
-        style={styleByType[lineType ?? "solid"]}
-      />
-    );
-  });
-};
+// const DashedLine: any = ({
+//   series,
+//   lineGenerator,
+//   xScale,
+//   yScale,
+// }: {
+//   series: LineGroupData[];
+//   lineGenerator: any;
+//   xScale: any;
+//   yScale: any;
+// }) => {
+//   return series.map(({ id, data, color, lineType }) => {
+//     return (
+//       <path
+//         key={id}
+//         d={lineGenerator(
+//           data.map((d: any) => ({
+//             x: xScale(d.data.x),
+//             y: yScale(d.data.y),
+//           }))
+//         )}
+//         fill="none"
+//         stroke={color}
+//         style={styleByType[lineType ?? "solid"]}
+//       />
+//     );
+//   });
+// };
 export const LineChart = ({ data, markers }: Props) => (
   <>
     <ResponsiveLine
@@ -130,12 +119,11 @@ export const LineChart = ({ data, markers }: Props) => (
       }}
       markers={(markers ?? []).map((marker) => ({
         axis: marker.axis,
-        legend: "y marker at 0",
-        legendPosition: "bottom-left",
+        legend: marker?.icon ?? "",
+        legendPosition: "top",
         lineStyle: {
-          stroke: marker.color ?? "#b0413e",
-          strokeWidth: 1,
-          strokeDasharray: "5, 5",
+          ...styleByType[(marker.lineType as LineType) ?? "dashed"],
+          stroke: marker.color ?? "transparent",
         },
         value: marker.value,
       }))}
@@ -145,8 +133,6 @@ export const LineChart = ({ data, markers }: Props) => (
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 45,
-        legendOffset: 36,
-        legendPosition: "middle",
         truncateTickAt: 0,
         format: (ms) => msToTickerDate(Number(ms)) || "???",
       }}

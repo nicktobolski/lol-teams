@@ -105,7 +105,7 @@ const PageContent = () => {
               (part) => part.puuid === puuid
             );
             if (!participantData) {
-              return { x: "{}", y: 0 };
+              return { x: "0", y: 0 };
             }
             console.log({ game });
             return {
@@ -165,6 +165,22 @@ const PageContent = () => {
       value: teamAverage.replace(",", ""),
     });
   }
+
+  playerChartData?.[0]?.data.forEach((point) => {
+    // if any player in puuids won the game, add a marker on the x axis at the appropriate key
+    console.log({ point: point.data });
+    const anyTeamMembersRecords = point.data?.info.participants.find(
+      ({ puuid }) => puuid === puuids[0]
+    );
+
+    if (anyTeamMembersRecords?.win)
+      chartMarkers.push({
+        axis: "x",
+        value: point?.data?.info.gameCreation.toString() ?? "0",
+        lineType: "solid",
+        icon: "🏆",
+      });
+  });
 
   return (
     <div className="flex w-full flex-wrap md:flex-nowrap gap-4 md:flex-col">
