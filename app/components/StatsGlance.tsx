@@ -112,7 +112,7 @@ function StatsAtom({
 }) {
   return (
     <div className="">
-      <div className="pb-2">{name}</div>
+      <div className="pb-2 font-s">{name}</div>
       <div className="flex items-center gap-5">
         <div className="font-black text-3xl team-color">
           {bigNumber ?? teamScore(scores ?? [])}

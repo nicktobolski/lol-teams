@@ -24,6 +24,7 @@ import {
   RadioGroup,
   Select,
   SelectItem,
+  Switch,
 } from "@nextui-org/react";
 import { StatsGlance, StatsRecord } from "../components/StatsGlance";
 import { ChartLoading } from "../components/ChartLoading";
@@ -240,8 +241,8 @@ const PageContent = () => {
       )}
       {!isGameDataLoading && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <div className="grid grid-cols-12 items-center pt-24 ">
-            <div className="col-start-1 col-end-4 pl-24 pr-5 flex flex-col gap-4 pt-16">
+          <div className="grid grid-cols-12 items-center pt-3 ">
+            <div className="col-start-1 col-end-4 pl-24 pr-5 flex flex-col gap-4 pt-10">
               <Select
                 label="Compare"
                 className="max-w-xs"
@@ -275,7 +276,9 @@ const PageContent = () => {
                 games={justGames}
                 compareProperty={compareProperty}
                 players={players ?? []}
-                teamWinRate={`${(totalWins / (justGames?.length ?? 1)) * 100}%`}
+                teamWinRate={`${formatAndRound(
+                  (totalWins / (justGames?.length ?? 1)) * 100
+                )}%`}
               />
             </div>
           </div>
