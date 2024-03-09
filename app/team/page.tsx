@@ -236,7 +236,7 @@ const PageContent = () => {
                 color="primary"
               >
                 {DATA_COMPARE_KEYS.map((key) => (
-                  <SelectItem key={key} value={key}>
+                  <SelectItem key={key} value={key} className="text-white">
                     {key}
                   </SelectItem>
                 ))}
