@@ -1,3 +1,4 @@
+import { errorHandler } from "@/app/utils/utils";
 import ky from "ky";
 
 export async function GET(
@@ -13,7 +14,6 @@ export async function GET(
     const data = await ky.get(reqUrl).json();
     return Response.json(data);
   } catch (error) {
-    console.log("There was an error", { error, request });
-    return Response.error();
+    return errorHandler({ error, request });
   }
 }

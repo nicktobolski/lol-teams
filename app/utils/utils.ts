@@ -113,3 +113,14 @@ export const teamScore = (scores: StatsRecord[]) => {
     }, 0) / scores.length
   );
 };
+
+export function errorHandler({
+  error,
+  request,
+}: {
+  error: unknown;
+  request: Request;
+}) {
+  console.log("There was an error", { error, request });
+  return Response.error();
+}
