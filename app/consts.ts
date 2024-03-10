@@ -33,7 +33,7 @@ export const DATA_COMPARE_KEYS: (keyof ParticipantRecordWithAugments)[] = [
   "wardsPlaced",
   "totalPings",
   "pingDiversity",
-
+  "killParticipation",
   "turretTakedowns",
   "turretKills",
   "timeCCingOthers",

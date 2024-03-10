@@ -47,6 +47,9 @@ export const propertyFunctionMap = {
 
     return uniquePings;
   },
+  killParticipation: (record: ParticipantRecord) => {
+    return record.kills + record.assists;
+  },
 };
 
 export const getParticipantsDataForCompareKey = (
