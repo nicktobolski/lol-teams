@@ -53,31 +53,45 @@ const TooltipThing: React.FunctionComponent<PointTooltipProps> = (props) => {
         )}`}
       </div>
       {pointData.participantData && (
-        <div className="flex gap-2">
-          <Image
-            src={`http://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/${pointData.participantData?.championName}.png`}
-            width={32}
-            height={32}
-            alt={`Player avatar`}
-            className="avatar"
-          />
-          <div className="flex items-center">
-            {pointData.participantData?.championName}
+        <div className="flex flex-col gap-3">
+          <div className="flex gap-2">
+            <Image
+              src={`http://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/${pointData.participantData?.championName}.png`}
+              width={48}
+              height={48}
+              alt={`Player avatar`}
+              className="avatar"
+            />
+            <div className="flex items-center  text-gray-300">
+              {pointData.participantData?.championName}
+              <br />
+              {pointData.participantData?.kills}/
+              {pointData.participantData?.deaths}/
+              {pointData.participantData?.assists}
+            </div>
           </div>
         </div>
       )}
     </div>
   );
 };
-const Pointer = (props: {}) => {
-  // console.log({ props });
-  //   <Image
-  //   src={`http://ddragon.leagueoflegends.com/cdn/10.18.1/img/profileicon/${player.metaData?.profileIconId}.png`}
-  //   width={36}
-  //   height={36}
-  //   alt={`${player.name}'s League Avatar`}
-  // />
-  return <div></div>;
+const Pointer = (props: any) => {
+  console.log({ props });
+  return (
+    <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+      <text width="200" height="200">
+        👌
+      </text>
+      {/* <Image
+        src={`http://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/${pointData.participantData?.championName}.png`}
+        width={32}
+        height={32}
+        alt={`Player avatar`}
+        className="avatar"
+      /> */}
+      {/* <image href="mdn_logo_only_color.png" height="200" width="200" /> */}
+    </svg>
+  );
 };
 
 const msToTickerDate = (ms: string | number) => {
@@ -103,34 +117,6 @@ const styleByType = {
   },
 };
 
-// const DashedLine: any = ({
-//   series,
-//   lineGenerator,
-//   xScale,
-//   yScale,
-// }: {
-//   series: LineGroupData[];
-//   lineGenerator: any;
-//   xScale: any;
-//   yScale: any;
-// }) => {
-//   return series.map(({ id, data, color, lineType }) => {
-//     return (
-//       <path
-//         key={id}
-//         d={lineGenerator(
-//           data.map((d: any) => ({
-//             x: xScale(d.data.x),
-//             y: yScale(d.data.y),
-//           }))
-//         )}
-//         fill="none"
-//         stroke={color}
-//         style={styleByType[lineType ?? "solid"]}
-//       />
-//     );
-//   });
-// };
 export const LineChart = ({ data, markers }: Props) => (
   <>
     <ResponsiveLine
