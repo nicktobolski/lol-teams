@@ -8,7 +8,7 @@ export const nivoTheme = {
   },
   crosshair: {
     line: {
-      stroke: "var(--dark-blue)",
+      stroke: "var(--da-pink)",
       strokeOpacity: 1,
       strokeWidth: 1,
     },
