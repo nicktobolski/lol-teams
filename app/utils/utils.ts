@@ -29,7 +29,6 @@ export function getRandomColor() {
 
 export const propertyFunctionMap = {
   kda: ({ kills, assists, deaths }: ParticipantRecord) => {
-    if (!kills || !assists) return 0;
     return roundTo2DecimalPlaces(kills + assists) / (deaths === 0 ? 1 : deaths);
   },
   totalPings: (record: ParticipantRecord) => {
