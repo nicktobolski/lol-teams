@@ -140,7 +140,10 @@ const PageContent = () => {
 
   const teamLineData = averageXValues(
     playerChartData.map((thing) => thing.data)
-  );
+  ).map((point, i) => ({
+    ...point,
+    data: justGames[i],
+  }));
   const teamChartData = useMemo(
     () => ({
       id: "Team",

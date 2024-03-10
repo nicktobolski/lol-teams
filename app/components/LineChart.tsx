@@ -39,6 +39,7 @@ type Props = {
 
 const TooltipThing: React.FunctionComponent<PointTooltipProps> = (props) => {
   const pointData = props.point.data as LineData;
+  console.log({ pointData });
   return (
     <div
       style={{ borderColor: props.point.color ?? "transparent" }}
@@ -95,7 +96,7 @@ const Pointer = (props: any) => {
 };
 
 const msToTickerDate = (ms: string | number) => {
-  return format(ms ?? 0, "M/d ")
+  return format(ms ?? 0, "M/d h:mma")
     .toLowerCase()
     .slice(0, -1);
 };
@@ -123,7 +124,7 @@ export const LineChart = ({ data, markers }: Props) => (
       data={data}
       theme={nivoTheme}
       animate={true}
-      margin={{ top: 50, right: 90, bottom: 60, left: 100 }}
+      margin={{ top: 50, right: 90, bottom: 80, left: 100 }}
       xScale={{ type: "point" }}
       yScale={{
         type: "linear",
