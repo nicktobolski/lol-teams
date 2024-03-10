@@ -27,6 +27,7 @@ const getRandomLoadingText = () => {
 };
 
 export function ChartLoading({ loadingText }: { loadingText: string }) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const coolGuyText = useMemo(() => getRandomLoadingText(), [loadingText]);
   const [realCoolGuyText, setCoolGuyText] = React.useState("false");
 
@@ -38,7 +39,7 @@ export function ChartLoading({ loadingText }: { loadingText: string }) {
     return () => {
       clearInterval(textChanger);
     };
-  }, []);
+  }, [coolGuyText]);
   return (
     <WavyBackground className="max-w-4xl w-1/4 mx-auto flex flex-col gap-2 absolute">
       <p className="text-white inter-var text-center">{realCoolGuyText}</p>

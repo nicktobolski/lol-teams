@@ -39,6 +39,15 @@ export const propertyFunctionMap = {
     }, 0);
     return number;
   },
+  pingDiversity: (record: ParticipantRecord) => {
+    const pingValues = ALL_PING_KEYS.map(
+      (key) => getParticipantsDataForCompareKey(record, key) ?? 0
+    );
+    const uniquePings: number = pingValues.filter((val) => val > 0).length;
+    console.log({ pingValues, uniquePings });
+
+    return uniquePings;
+  },
 };
 
 export const getParticipantsDataForCompareKey = (
@@ -124,3 +133,6 @@ export function errorHandler({
   console.log("There was an error", { error, request });
   return Response.error();
 }
+
+export type ParticipantRecordWithAugments = ParticipantRecord &
+  typeof propertyFunctionMap;

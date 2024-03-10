@@ -85,11 +85,8 @@ const PageContent = () => {
     return intersectionOfArrays(...allGames);
   }, [gameIdsResults]);
 
-  const games2get = gameCountRequested
-    ? gameCountRequested < 51
-      ? gameCountRequested
-      : 50
-    : 40;
+  const games2get =
+    gameCountRequested && gameCountRequested < 51 ? gameCountRequested : 50;
   const gameQueries = (relevantGameIds.slice(0, games2get) || []).map((id) => {
     return {
       queryKey: ["game", id],

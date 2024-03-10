@@ -1,6 +1,8 @@
+import { ParticipantRecordWithAugments } from "./utils/utils";
+
 export const LAYOUT_CLASSES =
   "flex min-h-screen flex-col items-center justify-start dark text-foreground bg-background";
-export const ALL_PING_KEYS = [
+export const ALL_PING_KEYS: (keyof ParticipantRecordWithAugments)[] = [
   "allInPings",
   "assistMePings",
   "getBackPings",
@@ -15,7 +17,7 @@ export const ALL_PING_KEYS = [
   "pushPings",
   "visionClearedPings",
 ];
-export const DATA_COMPARE_KEYS = [
+export const DATA_COMPARE_KEYS: (keyof ParticipantRecordWithAugments)[] = [
   "kills",
   "assists",
   "deaths",
@@ -30,6 +32,8 @@ export const DATA_COMPARE_KEYS = [
   "wardsKilled",
   "wardsPlaced",
   "totalPings",
+  "pingDiversity",
+
   "turretTakedowns",
   "turretKills",
   "timeCCingOthers",
