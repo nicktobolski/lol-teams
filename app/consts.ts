@@ -45,6 +45,10 @@ export const DATA_COMPARE_KEYS: (keyof ParticipantRecordWithAugments)[] = [
   "quadraKills",
   "pentaKills",
   "inhibitorTakedowns",
+  "spell1Casts",
+  "spell2Casts",
+  "spell3Casts",
+  "spell4Casts",
   ...ALL_PING_KEYS,
 ];
 
