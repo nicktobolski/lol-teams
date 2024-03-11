@@ -18,6 +18,11 @@ const COOL_LOADING_TEXTS = [
   "Analyzing...",
   "Fetching data...",
   "🤠..",
+  "Eating lunch BRB...",
+  "Taking a mini nap...",
+  "👉👌",
+  "💆‍♂️ Recuperating",
+  "🧘 Merging with charts godbrain",
 ];
 
 const getRandomLoadingText = () => {
