@@ -286,7 +286,11 @@ const PageContent = () => {
           <div
             className={`h-128 w-full chartContainer px-12 pt-8 min-w-[600px]`}
           >
-            <LineChart data={allChartData} markers={chartMarkers} />
+            <LineChart
+              data={allChartData}
+              markers={chartMarkers}
+              teamPuuids={puuids}
+            />
           </div>
         </motion.div>
       )}

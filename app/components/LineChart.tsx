@@ -35,23 +35,30 @@ type Props = {
     lineType?: LineType;
     icon?: string;
   }[];
+  teamPuuids: string[];
 };
 
-const TooltipThing: React.FunctionComponent<PointTooltipProps> = (props) => {
-  const pointData = props.point.data as LineData;
-  console.log({ pointData });
+const TooltipThing: React.FunctionComponent<
+  PointTooltipProps & { teamPuuids: string[] }
+> = ({ point, teamPuuids }) => {
+  const pointData = point.data as LineData;
+  console.log({ data: point });
+  const participantData = teamPuuids.map((puuid) => {
+    return pointData.data?.info.participants.find(
+      (part) => part.puuid === puuid
+    );
+  });
+  console.log({ participantData });
   return (
     <div
-      style={{ borderColor: props.point.color ?? "transparent" }}
+      style={{ borderColor: point.color ?? "transparent" }}
       className="chartTooltip px-3 py-1"
     >
       <div>
         <span className="font-black">
-          {props.point.serieId} {props.point.color}:{" "}
+          {point.serieId} {point.color}:{" "}
         </span>
-        {`${new Intl.NumberFormat("en-US").format(
-          props.point.data.y as number
-        )}`}
+        {`${new Intl.NumberFormat("en-US").format(point.data.y as number)}`}
       </div>
       {pointData.participantData && (
         <div className="flex flex-col gap-3">
@@ -118,7 +125,7 @@ const styleByType = {
   },
 };
 
-export const LineChart = ({ data, markers }: Props) => (
+export const LineChart = ({ data, markers, teamPuuids }: Props) => (
   <>
     <ResponsiveLine
       data={data}
@@ -179,7 +186,9 @@ export const LineChart = ({ data, markers }: Props) => (
         "points",
         "mesh",
       ]}
-      tooltip={TooltipThing}
+      tooltip={(tooltip) => (
+        <TooltipThing point={tooltip.point} teamPuuids={teamPuuids} />
+      )}
     />
   </>
 );

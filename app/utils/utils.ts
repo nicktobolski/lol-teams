@@ -50,6 +50,14 @@ export const propertyFunctionMap = {
   killParticipation: (record: ParticipantRecord) => {
     return record.kills + record.assists;
   },
+  totalSpellCasts: (record: ParticipantRecord) => {
+    return (
+      record.spell1Casts +
+      record.spell2Casts +
+      record.spell3Casts +
+      record.spell4Casts
+    );
+  },
 };
 
 export const getParticipantsDataForCompareKey = (
