@@ -69,8 +69,7 @@ const TooltipThing: React.FunctionComponent<
       <div>
         {relevantParticipantData.length > 1 && (
           <span className="font-bold text-gray-300">
-            {point.serieId} {formatCompareKey(compareKey)}:{" "}
-            {`${formatAndRound(point.data.y as number)}`}
+            {point.serieId}: {`${formatAndRound(point.data.y as number)}`}
           </span>
         )}
       </div>
