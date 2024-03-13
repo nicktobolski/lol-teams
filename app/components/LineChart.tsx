@@ -1,4 +1,8 @@
-import { PointTooltipProps, ResponsiveLine } from "@nivo/line";
+import {
+  PointSymbolProps,
+  PointTooltipProps,
+  ResponsiveLine,
+} from "@nivo/line";
 import { nivoTheme } from "../utils/nivoTheme";
 import { format } from "date-fns";
 import { GameStub, ParticipantRecord } from "../hooks/lolHooks";
@@ -42,14 +46,16 @@ type Props = {
   }[];
   teamPuuids: string[];
   compareKey: keyof ParticipantRecordWithAugments;
+  shouldShowBigToolTip: boolean;
 };
 
 const TooltipThing: React.FunctionComponent<
   PointTooltipProps & {
     teamPuuids: string[];
     compareKey: keyof ParticipantRecordWithAugments;
+    shouldShowBigToolTip: boolean;
   }
-> = ({ point, teamPuuids, compareKey }) => {
+> = ({ point, teamPuuids, compareKey, shouldShowBigToolTip }) => {
   const pointData = point.data as LineData;
   const teamParticipantRecords = teamPuuids.map((puuid) => {
     return pointData.data?.info.participants.find(
@@ -73,65 +79,84 @@ const TooltipThing: React.FunctionComponent<
           </span>
         )}
       </div>
-      <div className="flex-col flex gap-2 px-1">
-        {relevantParticipantData
-          .filter((item): item is ParticipantRecord => !!item)
-          .sort(
-            (a, b) =>
-              getParticipantsDataForCompareKey(b, compareKey) -
-              getParticipantsDataForCompareKey(a, compareKey)
-          )
-          .map((record) => (
-            <div className="flex flex-col gap-8" key={record?.summonerId}>
-              <div className="flex gap-2">
-                <Image
-                  src={`http://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/${record?.championName}.png`}
-                  width={48}
-                  height={48}
-                  alt={`Player avatar`}
-                  className="avatar"
-                />
-                <div className="flex flex-col items-start  text-gray-300">
-                  <div className="text-base ">
-                    {record?.summonerName}:{" "}
-                    {formatAndRound(
-                      getParticipantsDataForCompareKey(record, compareKey)
-                    )}
-                  </div>
-                  <div className="text-gray-500 text-base">
-                    {record?.kills}/{record?.deaths}/{record?.assists}{" "}
-                    {compareKey !== "kda" &&
-                      calcKda(
-                        record?.kills ?? 0,
-                        record?.assists ?? 0,
-                        record?.deaths ?? 0
+      {(shouldShowBigToolTip || relevantParticipantData.length < 2) && (
+        <div className="flex-col flex gap-2 px-1">
+          {relevantParticipantData
+            .filter((item): item is ParticipantRecord => !!item)
+            .sort(
+              (a, b) =>
+                getParticipantsDataForCompareKey(b, compareKey) -
+                getParticipantsDataForCompareKey(a, compareKey)
+            )
+            .map((record) => (
+              <div className="flex flex-col gap-8" key={record?.summonerId}>
+                <div className="flex gap-2">
+                  <Image
+                    src={`http://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/${record?.championName}.png`}
+                    width={48}
+                    height={48}
+                    alt={`Player avatar`}
+                    className="avatar"
+                  />
+                  <div className="flex flex-col items-start  text-gray-300">
+                    <div className="text-base ">
+                      {record?.summonerName}:{" "}
+                      {formatAndRound(
+                        getParticipantsDataForCompareKey(record, compareKey)
                       )}
+                    </div>
+                    <div className="text-gray-500 text-base">
+                      {record?.kills}/{record?.deaths}/{record?.assists}{" "}
+                      {compareKey !== "kda" &&
+                        calcKda(
+                          record?.kills ?? 0,
+                          record?.assists ?? 0,
+                          record?.deaths ?? 0
+                        )}
+                    </div>
                   </div>
-                </div>
 
-                <div></div>
+                  <div></div>
+                </div>
               </div>
-            </div>
-          ))}
-      </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 };
-const Pointer = (props: any) => {
-  // console.log({ props });
+const Pointer = ({
+  datum,
+  puuids,
+}: PointSymbolProps & { puuids: string[] }) => {
+  // console.log({ datum, puuids });
+  const firstTeamMembersGame: ParticipantRecord =
+    datum.data?.info?.participants.find(
+      (part: ParticipantRecord) => part.puuid === puuids[0]
+    );
+
   return (
     <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-      <text width="200" height="200">
-        👌
-      </text>
+      {firstTeamMembersGame?.win && (
+        <text width="200" height="200">
+          👌
+        </text>
+      )}
+      {/* show champion icons and win indicator */}
       {/* <Image
         src={`http://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/${pointData.participantData?.championName}.png`}
         width={32}
         height={32}
         alt={`Player avatar`}
         className="avatar"
-      /> */}
-      {/* <image href="mdn_logo_only_color.png" height="200" width="200" /> */}
+      />
+      <text
+        x="50"
+        y="50"
+        fill={pointData.participantData?.win ? "green" : "red"}
+      >
+        {pointData.participantData?.win ? "Win" : "Loss"}
+      </text> */}
     </svg>
   );
 };
@@ -159,13 +184,19 @@ const styleByType = {
   },
 };
 
-export const LineChart = ({ data, markers, teamPuuids, compareKey }: Props) => (
+export const LineChart = ({
+  data,
+  markers,
+  teamPuuids,
+  compareKey,
+  shouldShowBigToolTip,
+}: Props) => (
   <>
     <ResponsiveLine
       data={data}
       theme={nivoTheme}
       animate={true}
-      margin={{ top: 50, right: 90, bottom: 80, left: 100 }}
+      margin={{ top: 50, right: 90, bottom: 80, left: 110 }}
       xScale={{ type: "point" }}
       yScale={{
         type: "linear",
@@ -202,7 +233,7 @@ export const LineChart = ({ data, markers, teamPuuids, compareKey }: Props) => (
       pointSize={7}
       colors={{ datum: "color" }}
       pointColor={{ from: nivoTheme }}
-      // pointSymbol={Pointer}
+      // pointSymbol={(props) => <Pointer puuids={teamPuuids} {...props} />}
       pointBorderWidth={2}
       pointBorderColor={{ from: "serieColor" }}
       pointLabelYOffset={-12}
@@ -225,6 +256,7 @@ export const LineChart = ({ data, markers, teamPuuids, compareKey }: Props) => (
           point={tooltip.point}
           teamPuuids={teamPuuids}
           compareKey={compareKey}
+          shouldShowBigToolTip={shouldShowBigToolTip}
         />
       )}
     />

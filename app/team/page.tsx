@@ -9,7 +9,7 @@ import {
   fetchUserByName,
 } from "../hooks/lolHooks";
 import { useQueries } from "@tanstack/react-query";
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import {
   ParticipantRecordWithAugments,
   averageXValues,
@@ -42,6 +42,23 @@ const PageContent = () => {
   const [compareProperty, setCompareProperty] = useState("kda");
   const [shouldShowTeamLine, setShouldShowTeamLine] = useState(true);
   const [linesToInclude, setLinesToInclude] = useState("team");
+  const [shouldShowBigToolTip, setShouldShowBigToolTip] = useState(false);
+  useEffect(() => {
+    document.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.key === "Shift") {
+        setShouldShowBigToolTip(true);
+      }
+    });
+    document.addEventListener("keyup", (e: KeyboardEvent) => {
+      if (e.key === "Shift") {
+        setShouldShowBigToolTip(false);
+      }
+    });
+    return () => {
+      document.removeEventListener("keydown", () => {});
+      document.removeEventListener("keyup", () => {});
+    };
+  });
   const userQueries = (teamMemberNames || []).map((name) => {
     return {
       queryKey: ["user", name],
@@ -239,7 +256,7 @@ const PageContent = () => {
   });
 
   return (
-    <div className="flex w-full flex-wrap md:flex-nowrap gap-4 md:flex-col">
+    <div className="flex w-full flex-wrap md:flex-nowrap gap-4 md:flex-col overflow-y-hidden">
       {isGameDataLoading && (
         <div className="fade-in">
           <ChartLoading loadingText={"Loading team game data..."} />
@@ -299,6 +316,7 @@ const PageContent = () => {
               compareKey={
                 compareProperty as keyof ParticipantRecordWithAugments
               }
+              shouldShowBigToolTip={shouldShowBigToolTip}
             />
           </div>
         </motion.div>
