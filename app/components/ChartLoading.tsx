@@ -5,7 +5,7 @@ import { Progress } from "@nextui-org/react";
 
 const COOL_LOADING_TEXTS = [
   "Loading please wait! 😡",
-  "Crunching numbers to aid ape brain digestion...",
+  "Crunching numbers to aid smooth brains...",
   "Calculating...",
   "Thinking...",
   "Analyzing...",
@@ -14,15 +14,14 @@ const COOL_LOADING_TEXTS = [
   "Crunching numbers...",
   "Calculating...",
   "Thinking...",
-  "Thinking more...",
-  "Analyzing...",
+  "Thinking I think...",
+  "Analyzing, desperately...",
   "Fetching data...",
   "🤠..",
   "Eating lunch BRB...",
   "Taking a mini nap...",
-  "👉👌",
   "💆‍♂️ Recuperating",
-  "🧘 Merging with charts godbrain",
+  "🧘 Merging with charting godbrains",
 ];
 
 const getRandomLoadingText = () => {
