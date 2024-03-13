@@ -3,6 +3,7 @@ import { COOL_COLORS, DATA_COMPARE_KEYS, LAYOUT_CLASSES } from "../consts";
 import { useSearchParams } from "next/navigation";
 
 import {
+  GameStub,
   fetchGameById,
   fetchGamesByPuuid,
   fetchUserByName,
@@ -10,8 +11,10 @@ import {
 import { useQueries } from "@tanstack/react-query";
 import { Suspense, useMemo, useState } from "react";
 import {
+  ParticipantRecordWithAugments,
   averageXValues,
   formatAndRound,
+  formatCompareKey,
   getParticipantDataFromGame,
   getParticipantsDataForCompareKey,
   intersectionOfArrays,
@@ -38,7 +41,7 @@ const PageContent = () => {
   const gameCountRequested = parseInt(searchParams.get("count") ?? "0");
   const [compareProperty, setCompareProperty] = useState("kda");
   const [shouldShowTeamLine, setShouldShowTeamLine] = useState(true);
-  const [linesToInclude, setLinesToInclude] = useState("both");
+  const [linesToInclude, setLinesToInclude] = useState("team");
   const userQueries = (teamMemberNames || []).map((name) => {
     return {
       queryKey: ["user", name],
@@ -140,15 +143,18 @@ const PageContent = () => {
 
   const teamLineData = averageXValues(
     playerChartData.map((thing) => thing.data)
-  ).map((point, i) => ({
-    ...point,
-    data: justGames[i],
-  }));
+  ).map((point) => {
+    const relevantGame =
+      justGames.find(
+        (game) => game?.info.gameCreation.toString() === point.x
+      ) ?? ({} as GameStub);
+    return { ...point, data: relevantGame };
+  });
+
   const teamChartData = useMemo(
     () => ({
       id: "Team",
-      color: "var(--team-color)",
-      lineType: "dashed" as LineType,
+      color: "white",
       data: teamLineData,
     }),
     [teamLineData]
@@ -189,7 +195,7 @@ const PageContent = () => {
     });
   }
 
-  const allChartData = useMemo(() => {
+  const chartLineData = useMemo(() => {
     const newChartData = [];
     if (linesToInclude === "both") {
       newChartData.push(teamChartData);
@@ -252,7 +258,7 @@ const PageContent = () => {
               >
                 {DATA_COMPARE_KEYS.map((key) => (
                   <SelectItem key={key} value={key} className="text-white">
-                    {key}
+                    {formatCompareKey(key)}
                   </SelectItem>
                 ))}
               </Select>
@@ -266,7 +272,7 @@ const PageContent = () => {
                 <div className="flex gap-4">
                   <Radio value="team">Team</Radio>
                   <Radio value="players">Players</Radio>
-                  <Radio value="both">Both</Radio>
+                  {/* <Radio value="both">Both</Radio> */}
                 </div>
               </RadioGroup>
             </div>
@@ -287,9 +293,12 @@ const PageContent = () => {
             className={`h-128 w-full chartContainer px-12 pt-8 min-w-[600px]`}
           >
             <LineChart
-              data={allChartData}
+              data={chartLineData}
               markers={chartMarkers}
               teamPuuids={puuids}
+              compareKey={
+                compareProperty as keyof ParticipantRecordWithAugments
+              }
             />
           </div>
         </motion.div>

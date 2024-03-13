@@ -1,9 +1,14 @@
 import { PointTooltipProps, ResponsiveLine } from "@nivo/line";
 import { nivoTheme } from "../utils/nivoTheme";
-import { BasicTooltip } from "@nivo/tooltip";
 import { format } from "date-fns";
 import { GameStub, ParticipantRecord } from "../hooks/lolHooks";
-import { getParticipantDataFromGame } from "../utils/utils";
+import {
+  ParticipantRecordWithAugments,
+  calcKda,
+  formatAndRound,
+  formatCompareKey,
+  getParticipantsDataForCompareKey,
+} from "../utils/utils";
 import Image from "next/image";
 
 // make sure parent container have a defined height when using
@@ -36,55 +41,85 @@ type Props = {
     icon?: string;
   }[];
   teamPuuids: string[];
+  compareKey: keyof ParticipantRecordWithAugments;
 };
 
 const TooltipThing: React.FunctionComponent<
-  PointTooltipProps & { teamPuuids: string[] }
-> = ({ point, teamPuuids }) => {
+  PointTooltipProps & {
+    teamPuuids: string[];
+    compareKey: keyof ParticipantRecordWithAugments;
+  }
+> = ({ point, teamPuuids, compareKey }) => {
   const pointData = point.data as LineData;
-  console.log({ data: point });
-  const participantData = teamPuuids.map((puuid) => {
+  const teamParticipantRecords = teamPuuids.map((puuid) => {
     return pointData.data?.info.participants.find(
       (part) => part.puuid === puuid
     );
   });
-  console.log({ participantData });
+
+  const relevantParticipantData = pointData.participantData
+    ? [pointData.participantData]
+    : teamParticipantRecords;
+
   return (
     <div
       style={{ borderColor: point.color ?? "transparent" }}
-      className="chartTooltip px-3 py-1"
+      className="chartTooltip px-3 py-3 gap-1 flex flex-col"
     >
       <div>
-        <span className="font-black">
-          {point.serieId} {point.color}:{" "}
-        </span>
-        {`${new Intl.NumberFormat("en-US").format(point.data.y as number)}`}
+        {relevantParticipantData.length > 1 && (
+          <span className="font-bold text-gray-300">
+            {point.serieId} {formatCompareKey(compareKey)}:{" "}
+            {`${formatAndRound(point.data.y as number)}`}
+          </span>
+        )}
       </div>
-      {pointData.participantData && (
-        <div className="flex flex-col gap-3">
-          <div className="flex gap-2">
-            <Image
-              src={`http://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/${pointData.participantData?.championName}.png`}
-              width={48}
-              height={48}
-              alt={`Player avatar`}
-              className="avatar"
-            />
-            <div className="flex items-center  text-gray-300">
-              {pointData.participantData?.championName}
-              <br />
-              {pointData.participantData?.kills}/
-              {pointData.participantData?.deaths}/
-              {pointData.participantData?.assists}
+      <div className="flex-col flex gap-2 px-1">
+        {relevantParticipantData
+          .filter((item): item is ParticipantRecord => !!item)
+          .sort(
+            (a, b) =>
+              getParticipantsDataForCompareKey(b, compareKey) -
+              getParticipantsDataForCompareKey(a, compareKey)
+          )
+          .map((record) => (
+            <div className="flex flex-col gap-8" key={record?.summonerId}>
+              <div className="flex gap-2">
+                <Image
+                  src={`http://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/${record?.championName}.png`}
+                  width={48}
+                  height={48}
+                  alt={`Player avatar`}
+                  className="avatar"
+                />
+                <div className="flex flex-col items-start  text-gray-300">
+                  <div className="text-base ">
+                    {record?.summonerName}:{" "}
+                    {formatAndRound(
+                      getParticipantsDataForCompareKey(record, compareKey)
+                    )}
+                  </div>
+                  <div className="text-gray-500 text-base">
+                    {record?.kills}/{record?.deaths}/{record?.assists}{" "}
+                    {compareKey !== "kda" &&
+                      calcKda(
+                        record?.kills ?? 0,
+                        record?.assists ?? 0,
+                        record?.deaths ?? 0
+                      )}
+                  </div>
+                </div>
+
+                <div></div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          ))}
+      </div>
     </div>
   );
 };
 const Pointer = (props: any) => {
-  console.log({ props });
+  // console.log({ props });
   return (
     <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
       <text width="200" height="200">
@@ -125,7 +160,7 @@ const styleByType = {
   },
 };
 
-export const LineChart = ({ data, markers, teamPuuids }: Props) => (
+export const LineChart = ({ data, markers, teamPuuids, compareKey }: Props) => (
   <>
     <ResponsiveLine
       data={data}
@@ -187,7 +222,11 @@ export const LineChart = ({ data, markers, teamPuuids }: Props) => (
         "mesh",
       ]}
       tooltip={(tooltip) => (
-        <TooltipThing point={tooltip.point} teamPuuids={teamPuuids} />
+        <TooltipThing
+          point={tooltip.point}
+          teamPuuids={teamPuuids}
+          compareKey={compareKey}
+        />
       )}
     />
   </>
