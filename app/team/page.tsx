@@ -226,6 +226,8 @@ const PageContent = () => {
     return newChartData;
   }, [playerChartData, teamChartData, linesToInclude]);
 
+  const maxY = useMemo(() => getMaxY(playerChartData), [playerChartData]);
+
   let totalWins = 0;
   playerChartData?.[0]?.data.forEach((point) => {
     // if any player in puuids won the game, add a marker on the x axis at the appropriate key
@@ -317,6 +319,7 @@ const PageContent = () => {
                 compareProperty as keyof ParticipantRecordWithAugments
               }
               shouldShowBigToolTip={shouldShowBigToolTip}
+              maxY={maxY}
             />
           </div>
         </motion.div>
@@ -332,4 +335,18 @@ export default function Page() {
       </Suspense>
     </main>
   );
+}
+
+function getMaxY(chartLineData: LineGroupData[]): number {
+  let maxY = -Infinity;
+
+  chartLineData.forEach((lineGroup) => {
+    lineGroup.data.forEach((dataPoint) => {
+      if (dataPoint.y > maxY) {
+        maxY = dataPoint.y;
+      }
+    });
+  });
+
+  return maxY;
 }
