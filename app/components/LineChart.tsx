@@ -47,6 +47,7 @@ type Props = {
   teamPuuids: string[];
   compareKey: keyof ParticipantRecordWithAugments;
   shouldShowBigToolTip: boolean;
+  maxY?: number;
 };
 
 const TooltipThing: React.FunctionComponent<
@@ -190,6 +191,7 @@ export const LineChart = ({
   teamPuuids,
   compareKey,
   shouldShowBigToolTip,
+  maxY,
 }: Props) => (
   <>
     <ResponsiveLine
@@ -201,7 +203,7 @@ export const LineChart = ({
       yScale={{
         type: "linear",
         min: 0,
-        max: "auto",
+        max: maxY || "auto",
       }}
       markers={(markers ?? []).map((marker) => ({
         axis: marker.axis,
