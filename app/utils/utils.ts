@@ -1,7 +1,8 @@
-import { LineData } from "../components/LineChart";
+import { UseQueryResult } from "@tanstack/react-query";
+import { LineData, LineType } from "../components/LineChart";
 import { StatsRecord } from "../components/StatsGlance";
-import { ALL_PING_KEYS } from "../consts";
-import { GameStub, ParticipantRecord } from "../hooks/lolHooks";
+import { ALL_PING_KEYS, COOL_COLORS } from "../consts";
+import { GameStub, ParticipantRecord, PlayerMetaData } from "../hooks/lolHooks";
 
 export function intersectionOfArrays(...arrays: string[][]): string[] {
   // Check if there are no arrays or any one of the arrays is empty
@@ -148,6 +149,83 @@ export function errorHandler({
 }) {
   // console.log("There was an error", { error, request });
   return Response.error();
+}
+
+export function getPlayersDataFromQueryResults(
+  userResults: UseQueryResult<PlayerMetaData, Error>[],
+  teamMemberNames?: string[]
+): [string[], any[]] {
+  const puuids =
+    teamMemberNames
+      ?.map((name, i) => userResults?.[i]?.data?.puuid ?? "")
+      .filter(Boolean) ?? [];
+
+  const players =
+    teamMemberNames?.map((name, i) => {
+      return {
+        color: COOL_COLORS[i],
+        puuid: userResults?.[i]?.data?.puuid ?? "asdf",
+        name,
+        metaData: userResults?.[i]?.data,
+      };
+    }) ?? [];
+
+  return [puuids, players];
+}
+
+export function createChartMarkers(
+  teamAverage: string,
+  playerChartData: {
+    id: any;
+    color: any;
+    lineType: LineType;
+    data: (
+      | { x: string; y: number; data?: undefined; participantData?: undefined }
+      | {
+          y: number;
+          data: GameStub | undefined;
+          x: string;
+          participantData: ParticipantRecord;
+        }
+    )[];
+  }[],
+  puuids: string[]
+) {
+  const chartMarkers = [] as any;
+  chartMarkers.push({
+    axis: "y",
+    color: "var(--team-color)",
+    value: teamAverage.replace(",", ""),
+  });
+  let totalWins = 0;
+  playerChartData?.[0]?.data.forEach((point) => {
+    // if any player in puuids won the game, add a marker on the x axis at the appropriate key
+    const anyTeamMembersRecords = point.data?.info.participants.find(
+      ({ puuid }) => puuid === puuids[0]
+    );
+    if (anyTeamMembersRecords?.win) {
+      totalWins++;
+      chartMarkers.push({
+        axis: "x",
+        value: point?.data?.info.gameCreation.toString() ?? "0",
+        lineType: "thickSolid" as LineType,
+        color: "var(--win-highlight-color)",
+        icon: "🏆",
+      });
+    }
+
+    // somehow always false... maybe riot doesn't have this data?
+    if (anyTeamMembersRecords?.teamEarlySurrendered) {
+      chartMarkers.push({
+        axis: "x",
+        value: point?.data?.info.gameCreation.toString() ?? "0",
+        lineType: "solid" as LineType,
+        color: "var(--win-highlight-color)",
+        icon: "🙈",
+      });
+    }
+  });
+  return { totalWins, chartMarkers };
 }
 
 export type ParticipantRecordWithAugments = ParticipantRecord &

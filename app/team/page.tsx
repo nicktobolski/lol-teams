@@ -4,12 +4,13 @@ import { useSearchParams } from "next/navigation";
 
 import {
   GameStub,
+  PlayerMetaData,
   fetchGameById,
   fetchGamesByPuuid,
   fetchUserByName,
 } from "../hooks/lolHooks";
-import { useQueries } from "@tanstack/react-query";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { UseQueryResult, useQueries } from "@tanstack/react-query";
+import { Suspense, useMemo, useState } from "react";
 import {
   ParticipantRecordWithAugments,
   averageXValues,
@@ -17,49 +18,25 @@ import {
   formatCompareKey,
   getParticipantDataFromGame,
   getParticipantsDataForCompareKey,
+  getPlayersDataFromQueryResults,
   intersectionOfArrays,
   teamScore,
 } from "../utils/utils";
 import { LineChart, LineGroupData, LineType } from "../components/LineChart";
-import {
-  Button,
-  Checkbox,
-  Radio,
-  RadioGroup,
-  Select,
-  SelectItem,
-  Switch,
-} from "@nextui-org/react";
+import { Select, SelectItem, Switch } from "@nextui-org/react";
 import { StatsGlance, StatsRecord } from "../components/StatsGlance";
 import { ChartLoading } from "../components/ChartLoading";
 import { motion } from "framer-motion";
-import { Meteors } from "../components/ui/Meteors";
 
 const PageContent = () => {
   const searchParams = useSearchParams();
   const teamMemberNames = searchParams.get("members")?.split(",");
   const gameCountRequested = parseInt(searchParams.get("count") ?? "0");
+
   const [compareProperty, setCompareProperty] = useState("kda");
-  const [shouldShowTeamLine, setShouldShowTeamLine] = useState(true);
   const [linesToInclude, setLinesToInclude] = useState("team");
-  const [shouldShowBigToolTip, setShouldShowBigToolTip] = useState(false);
-  useEffect(() => {
-    document.addEventListener("keydown", (e: KeyboardEvent) => {
-      if (e.key === "Shift") {
-        setShouldShowBigToolTip(true);
-      }
-    });
-    document.addEventListener("keyup", (e: KeyboardEvent) => {
-      if (e.key === "Shift") {
-        setShouldShowBigToolTip(false);
-      }
-    });
-    return () => {
-      document.removeEventListener("keydown", () => {});
-      document.removeEventListener("keyup", () => {});
-    };
-  });
-  const userQueries = (teamMemberNames || []).map((name) => {
+
+  const getUserDataByUserNameQueries = (teamMemberNames || []).map((name) => {
     return {
       queryKey: ["user", name],
       queryFn: () => fetchUserByName(name),
@@ -67,63 +44,59 @@ const PageContent = () => {
     };
   });
   const userResults = useQueries({
-    queries: userQueries,
+    queries: getUserDataByUserNameQueries,
   });
-
-  const puuids = userResults
-    .map(({ data }) => data?.puuid ?? "")
-    .filter(Boolean);
-
-  const players = useMemo(
-    () =>
-      teamMemberNames?.map((name, i) => {
-        return {
-          color: COOL_COLORS[i],
-          puuid: userResults?.[i]?.data?.puuid ?? "asdf",
-          name,
-          metaData: userResults?.[i]?.data,
-        };
-      }) ?? [],
-    [teamMemberNames, userResults]
+  const [puuids, players] = getPlayersDataFromQueryResults(
+    userResults,
+    teamMemberNames
   );
 
-  const gameIdsQueries = players.map(({ puuid }) => {
-    return {
-      queryKey: ["matches", puuid],
-      queryFn: () => fetchGamesByPuuid(puuid),
-      staleTime: 0,
-      enabled: puuids.length === userResults.length,
-    };
-  });
-
+  const gameIdsQueries = useMemo(() => {
+    return players.map(({ puuid }) => {
+      return {
+        queryKey: ["matches", puuid],
+        queryFn: () => fetchGamesByPuuid(puuid),
+        staleTime: 0,
+        enabled: puuids.length === userResults.length,
+      };
+    });
+  }, [players, puuids.length, userResults.length]);
   const gameIdsResults = useQueries({
     queries: gameIdsQueries,
   });
-
   const relevantGameIds: string[] = useMemo(() => {
     const allGames = (gameIdsResults ?? []).map((result) => result?.data ?? []);
     return intersectionOfArrays(...allGames);
   }, [gameIdsResults]);
 
-  const games2get =
-    gameCountRequested && gameCountRequested < 51 ? gameCountRequested : 50;
-  const gameQueries = (relevantGameIds.slice(0, games2get) || []).map((id) => {
-    return {
-      queryKey: ["game", id],
-      queryFn: () => fetchGameById(id),
-      staleTime: Infinity,
-      enabled: relevantGameIds.length > 0,
-    };
-  });
+  const gamesCount2get =
+    gameCountRequested && gameCountRequested < 501 ? gameCountRequested : 500;
+  const gameQueries = (relevantGameIds.slice(0, gamesCount2get) || []).map(
+    (id) => {
+      return {
+        queryKey: ["game", id],
+        queryFn: () => fetchGameById(id),
+        staleTime: Infinity,
+        enabled: relevantGameIds.length > 0,
+        retryDelay: (attemptIndex: number) =>
+          Math.min(300 * 2 ** attemptIndex, 60000),
+      };
+    }
+  );
 
   const gameResults = useQueries({
     queries: gameQueries,
   });
 
-  const justGames = gameResults.map((result) => result.data);
-  const isGameDataLoading =
-    relevantGameIds.length === 0 ||
-    gameResults
+  const justGames = useMemo(
+    () => gameResults.map((result) => result.data),
+    [gameResults]
+  );
+  const isSomeQueryLoading =
+    userResults.length === 0 ||
+    gameIdsResults.length === 0 ||
+    gameResults.length === 0 ||
+    [...gameResults, ...gameIdsResults, ...userResults]
       .map(({ isLoading }) => isLoading)
       .some((isLoading) => isLoading);
 
@@ -204,13 +177,11 @@ const PageContent = () => {
   const teamAverage = teamScore(average);
   const chartMarkers = [] as any;
 
-  if (shouldShowTeamLine) {
-    chartMarkers.push({
-      axis: "y",
-      color: "var(--team-color)",
-      value: teamAverage.replace(",", ""),
-    });
-  }
+  chartMarkers.push({
+    axis: "y",
+    color: "var(--team-color)",
+    value: teamAverage.replace(",", ""),
+  });
 
   const chartLineData = useMemo(() => {
     const newChartData = [];
@@ -245,8 +216,8 @@ const PageContent = () => {
       });
     }
 
+    // somehow always false... maybe riot doesn't have this data?
     if (anyTeamMembersRecords?.teamEarlySurrendered) {
-      console.log("it happen lol");
       chartMarkers.push({
         axis: "x",
         value: point?.data?.info.gameCreation.toString() ?? "0",
@@ -259,12 +230,12 @@ const PageContent = () => {
 
   return (
     <div className="flex w-full flex-wrap md:flex-nowrap gap-4 md:flex-col overflow-y-hidden">
-      {isGameDataLoading && (
+      {isSomeQueryLoading && (
         <div className="fade-in">
           <ChartLoading loadingText={"Loading team game data..."} />
         </div>
       )}
-      {!isGameDataLoading && (
+      {!isSomeQueryLoading && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <div className="grid grid-cols-12 items-center pt-8 gap-8">
             <div className="col-start-1 col-end-4 pl-24 pr-5 flex flex-col gap-4 pt-10">
@@ -313,7 +284,7 @@ const PageContent = () => {
               compareKey={
                 compareProperty as keyof ParticipantRecordWithAugments
               }
-              shouldShowBigToolTip={shouldShowBigToolTip}
+              shouldShowBigToolTip={true}
               maxY={maxY}
             />
           </div>
@@ -322,6 +293,7 @@ const PageContent = () => {
     </div>
   );
 };
+
 export default function Page() {
   return (
     <main className={LAYOUT_CLASSES}>
