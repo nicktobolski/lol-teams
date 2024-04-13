@@ -281,19 +281,14 @@ const PageContent = () => {
                   </SelectItem>
                 ))}
               </Select>
-              <RadioGroup
-                aria-label="Lines to include"
-                orientation="horizontal"
-                onChange={(event) => setLinesToInclude(event.target.value)}
-                className="pl-2"
-                defaultValue={linesToInclude}
+
+              <Switch
+                color="secondary"
+                isSelected={linesToInclude === "players"}
+                onValueChange={(e) => setLinesToInclude(e ? "players" : "team")}
               >
-                <div className="flex gap-4">
-                  <Radio value="team">Team</Radio>
-                  <Radio value="players">Players</Radio>
-                  {/* <Radio value="both">Both</Radio> */}
-                </div>
-              </RadioGroup>
+                {linesToInclude === "team" ? "Team" : "Players"}
+              </Switch>
             </div>
 
             <div className="col-start-4 col-end-12">
@@ -337,6 +332,7 @@ export default function Page() {
   );
 }
 
+// used to set the y axis height
 function getMaxY(chartLineData: LineGroupData[]): number {
   let maxY = -Infinity;
 
