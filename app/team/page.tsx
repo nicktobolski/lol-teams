@@ -1,15 +1,15 @@
 "use client";
-import { COOL_COLORS, DATA_COMPARE_KEYS, LAYOUT_CLASSES } from "../consts";
+export const fetchCache = "force-no-store";
+import { DATA_COMPARE_KEYS, LAYOUT_CLASSES } from "../consts";
 import { useSearchParams } from "next/navigation";
 
 import {
   GameStub,
-  PlayerMetaData,
   fetchGameById,
   fetchGamesByPuuid,
   fetchUserByName,
 } from "../hooks/lolHooks";
-import { UseQueryResult, useQueries } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { Suspense, useMemo, useState } from "react";
 import {
   ParticipantRecordWithAugments,

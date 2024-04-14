@@ -5,7 +5,11 @@ const fetchUserByName = async (summonerName: string) => {
   return await ky.get(`api/lol/${summonerName}/profile`).json<PlayerMetaData>();
 };
 const fetchGamesByPuuid = async (id: string): Promise<string[]> => {
-  return await ky.get(`api/lol/${id}/games`).json();
+  return await ky
+    .get(`api/lol/${id}/games`, {
+      cache: "no-store",
+    })
+    .json();
 };
 const fetchGameById = async (id: string): Promise<GameStub> => {
   return await ky.get(`api/lol/${id}/game`).json();

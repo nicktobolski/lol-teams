@@ -1,6 +1,6 @@
 import { errorHandler } from "@/app/utils/utils";
 import ky from "ky";
-
+export const fetchCache = "force-no-store";
 export async function GET(
   request: Request,
   { params }: { params: { name: string } }
@@ -12,6 +12,7 @@ export async function GET(
     reqUrl.searchParams.set("api_key", process.env.RIOT_API_KEY ?? "");
     reqUrl.searchParams.set("count", String(100));
     const data = await ky.get(reqUrl).json();
+
     return Response.json(data);
   } catch (error) {
     return errorHandler({ error, request });
