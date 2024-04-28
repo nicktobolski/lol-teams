@@ -147,7 +147,7 @@ export function errorHandler({
   error: unknown;
   request: Request;
 }) {
-  // console.log("There was an error", { error, request });
+  console.log(`There was an error: \n ${JSON.stringify(error)}`);
   return Response.error();
 }
 
@@ -157,7 +157,7 @@ export function getPlayersDataFromQueryResults(
 ): [string[], any[]] {
   const puuids =
     teamMemberNames
-      ?.map((name, i) => userResults?.[i]?.data?.puuid ?? "")
+      ?.map((_, i) => userResults?.[i]?.data?.puuid ?? "")
       .filter(Boolean) ?? [];
 
   const players =
