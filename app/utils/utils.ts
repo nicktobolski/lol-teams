@@ -144,11 +144,22 @@ export function errorHandler({
   error,
   request,
 }: {
-  error: unknown;
+  error: any;
   request: Request;
 }) {
-  // console.log("There was an error", { error, request });
-  return Response.error();
+  try {
+    console.log(
+      `There was an error. Details: \n ${JSON.stringify(
+        error,
+        null,
+        2
+      )} \n ${JSON.stringify(request, null, 2)}`
+    );
+    error?.response?.text?.then((text: string) => console.log(text));
+    return Response.error();
+  } catch (e) {
+    console.log("Failed to handle error:\n", e);
+  }
 }
 
 export function getPlayersDataFromQueryResults(
@@ -157,7 +168,7 @@ export function getPlayersDataFromQueryResults(
 ): [string[], any[]] {
   const puuids =
     teamMemberNames
-      ?.map((name, i) => userResults?.[i]?.data?.puuid ?? "")
+      ?.map((_, i) => userResults?.[i]?.data?.puuid ?? "")
       .filter(Boolean) ?? [];
 
   const players =
